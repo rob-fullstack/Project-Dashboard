@@ -1,0 +1,106 @@
+/*Write your custom css in this file.*/
+
+/*
+* Grey - #4d4d4f
+* Dark Grey - #3e3e3f
+* Orange - #f2af3d
+* Dark Orange - #cc6328
+*/
+
+/**************************
+* Body
+***************************/
+html,
+body {
+	color: #3e3e3f;
+}
+
+/**************************
+* Button
+***************************/
+.btn-primary {
+	background-color: #f2af3d;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+	background-color: #cc6328;
+}
+
+/**************************
+* Sidebar
+***************************/
+#sidebar {
+	background: #3e3e3f;
+}
+#sidebar-menu li a {
+	color: #fff;
+}
+#sidebar-menu > li.active > a {
+	border-color: #f2af3d;
+	background: rgba(0,0,0,0.35);
+}
+#sidebar-menu li:hover,
+#sidebar-menu > li > ul > li:hover > a {
+	background: transparent;
+}
+#sidebar-menu li a:hover,
+#sidebar-menu > li > ul > li > a:hover {
+	color: #fff;
+	background: rgba(0,0,0,0.35);
+}
+
+#sidebar-menu li ul > li > a {
+	background: rgba(0,0,0,0.35);
+	color: rgba(255,255,255,0.65);
+}
+
+/**************************
+* Loader
+***************************/
+.app-loader .loading,
+.table-loader .loading {
+	border-color: #f2af3d;
+	border-top-color: #fff;
+}
+
+.circle-loader {
+	border-top-color: #f2af3d;
+}
+
+/**************************
+* Nav Tabs
+***************************/
+.nav-tabs>li>a:hover {
+	color: #cc6328;
+}
+.nav-tabs>li.active>a,
+.nav-tabs>li.active>a:active,
+.nav-tabs>li.active>a:hover,
+.nav-tabs>li.active>a:focus {
+	color: #cc6328;
+	border-bottom: 2px solid #f2af3d;
+}
+.nav-tabs>li:not(.title-tab):after {
+	background-color: #f2af3d;
+}
+
+/**************************
+* Events
+***************************/
+.user_filter {
+	min-width: 200px;
+}
+.fc-day-grid-event .fc-content {
+	display: flex;
+	align-items: center;
+	white-space: normal !important;
+}
+.fc-day-grid-event .fc-content .fc-title {
+	flex-basis: 70%;
+}
+.fc-day-grid-event .fc-content .event-task-assignee {
+	display: inline-block;
+	margin-left: auto;
+	width: 32px;
+	max-width: 100%;
+}

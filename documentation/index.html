@@ -1,0 +1,710 @@
+<!doctype html>  
+<!--[if IE 6 ]><html lang="en-us" class="ie6"> <![endif]-->
+<!--[if IE 7 ]><html lang="en-us" class="ie7"> <![endif]-->
+<!--[if IE 8 ]><html lang="en-us" class="ie8"> <![endif]-->
+<!--[if (gt IE 7)|!(IE)]><!-->
+<html lang="en-us"><!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+
+        <title>RISE - Ultimate Project Manager - The ultimate solution of project, client and team </title>
+
+        <meta name="description" content="Thank you for purchasing this application. In the rest of this documentation we'll describe the basics of the application.">
+        <meta name="author" content="fairsketch">
+        <meta name="copyright" content="fairsketch">
+        <meta name="generator" content="Documenter v2.0 http://rxa.li/documenter">
+        <meta name="date" content="2016-03-17T00:00:00+01:00">
+
+        <link rel="stylesheet" href="assets/css/documenter_style.css" media="all">
+
+        <link rel="stylesheet" href="assets/css/custom.css" media="screen">
+
+        <link rel="shortcut icon" type="image/x-icon" href="assets/favicon.png" />
+
+        <script src="assets/js/jquery.js"></script>
+
+        <script src="assets/js/jquery.scrollTo.js"></script>
+        <script src="assets/js/jquery.easing.js"></script>
+
+        <script>document.createElement('section');var duration = '586', easing = 'easeOutExpo';</script>
+        <script src="assets/js/script.js"></script>
+
+        <style>
+            html{background-color:#EEEEEE;color:#383838;}
+            ::-moz-selection{background:#333636;color:#00DFFC;}
+            ::selection{background:#333636;color:#00DFFC;}
+            #documenter_sidebar #documenter_logo{background-image:url(assets/images/image_1.png);}
+            a{color:#008C9E;}
+            .btn {
+                border-radius:3px;
+            }
+            .btn-primary {
+                background-image: -moz-linear-gradient(top, #008C9E, #006673);
+                background-image: -ms-linear-gradient(top, #008C9E, #006673);
+                background-image: -webkit-gradient(linear, 0 0, 0 008C9E%, from(#343838), to(#006673));
+                background-image: -webkit-linear-gradient(top, #008C9E, #006673);
+                background-image: -o-linear-gradient(top, #008C9E, #006673);
+                background-image: linear-gradient(top, #008C9E, #006673);
+                filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#008C9E', endColorstr='#006673', GradientType=0);
+                border-color: #006673 #006673 #bfbfbf;
+                color:#FFFFFF;
+            }
+            .btn-primary:hover,
+            .btn-primary:active,
+            .btn-primary.active,
+            .btn-primary.disabled,
+            .btn-primary[disabled] {
+                border-color: #008C9E #008C9E #bfbfbf;
+                background-color: #006673;
+            }
+            hr{border-top:1px solid #D4D4D4;border-bottom:1px solid #FFFFFF;}
+            #documenter_sidebar, #documenter_sidebar ul a{background-color:#343838;color:#FFFFFF;http://static.revaxarts-themes.com/noise.gif}
+                                                              #documenter_sidebar ul a{-webkit-text-shadow:1px 1px 0px #494F4F;-moz-text-shadow:1px 1px 0px #494F4F;text-shadow:1px 1px 0px #494F4F;}
+                                                          #documenter_sidebar ul{border-top:1px solid #212424;}
+                                                          #documenter_sidebar ul a{border-top:1px solid #494F4F;border-bottom:1px solid #212424;color:#FFFFFF;}
+                                                          #documenter_sidebar ul a:hover{background:#333636;color:#00DFFC;border-top:1px solid #333636;}
+                                                          #documenter_sidebar ul a.current{background:#333636;color:#00DFFC;border-top:1px solid #333636;}
+                                                          #documenter_copyright{display:block !important;visibility:visible !important;}
+            </style>
+
+        </head>
+        <body class="documenter-project-rise-ultimate-project-manager">
+            <div id="documenter_sidebar">
+                <a href="#documenter_cover" id="documenter_logo"></a>
+                <ul id="documenter_nav">
+                    <li><a class="current" href="#documenter_cover">Indroduction</a></li>
+                    <li><a href="#quick_start_guide" title="Quick Start Guide">Quick Start Guide</a></li>
+                    <li><a href="#features" title="Features">Features</a></li>
+                    <li><a href="#installation" title="Installation">Installation</a></li>
+                    <li><a href="#clients" title="Clients">Clients</a></li>
+                    <li><a href="#projects" title="Projects">Projects</a></li>
+                    <li><a href="#invoices_payments" title="Invoices & Payments">Invoices & Payments</a></li>
+                    <li><a href="#expenses" title="Expenses">Expenses</a></li>
+                    <li><a href="#support_tickets" title="Support Tickets">Support Tickets</a></li>
+                    <li><a href="#team_members" title="Team Members">Team Members</a></li>
+                    <li><a href="#messaging" title="Messaging">Messaging</a></li>
+                    <li><a href="#events_notes" title="Events & Notes">Events & Notes</a></li>
+                    <li><a href="#timeline" title="Timeline">Timeline</a></li>
+                    <li><a href="#time_cards" title="Time Cards">Time Cards</a></li>
+                    <li><a href="#leave" title="Leave">Leave</a></li>
+                    <li><a href="#announcements" title="Announcements">Announcements</a></li>
+                    <li><a href="#settings" title="Settings">Settings</a></li>
+                    <li><a href="#notifications" title="Notifications">Notifications</a></li>
+                    <li><a href="#upgrading_guide" title="Upgrading Guide">Upgrading Guide</a></li>
+                    <li><a href="#application_structure" title="Application Structure">Application Structure</a></li>
+                    <li><a href="#language" title="Language">Language</a></li>
+                    <li><a href="#development" title="Development">Development</a></li>
+                    <li><a href="#thanks" title="Thanks">Thanks</a></li>
+
+                </ul>
+                <div id="documenter_copyright">Copyright fairsketch 2016<br>
+                    made with the <a href="http://rxa.li/documenter">Documenter v2.0</a> 
+                </div>
+            </div>
+            <div id="documenter_content">
+                <section id="documenter_cover">
+                    <h1>RISE - Ultimate Project Manager</h1>
+                    <h2>The ultimate solution of projects, clients and team management </h2>
+                    <div id="documenter_buttons">
+                        <a href="http://codecanyon.net/item/rise-ultimate-project-manager/full_screen_preview/15455641" class="btn btn-primary btn-large">Live Demo</a> 
+                    </div>
+                    <hr>
+                    <ul>
+                        <li>Created: 03/16/2016</li>
+                        <li>By: fairsketch</li>
+
+                        <li>Email: <a href="mailto:&#115;&#117;&#112;&#112;&#111;&#114;&#116;&#64;&#102;&#97;&#105;&#114;&#115;&#107;&#101;&#116;&#99;&#104;&#46;&#99;&#111;&#109;">&#115;&#117;&#112;&#112;&#111;&#114;&#116;&#64;&#102;&#97;&#105;&#114;&#115;&#107;&#101;&#116;&#99;&#104;&#46;&#99;&#111;&#109;</a></li>
+                    </ul>
+                    <p>RISE - Ultimate Project Manager is the best way to manage your projects, clients and team members. You can easily collaborate with your team and monitor your work.</p>
+                </section>
+
+                <section id="quick_start_guide">
+                    <div class="page-header"><h3>Quick Start Guide</h3><hr class="notop"></div>
+                    <div>
+                        &nbsp;</div>
+                    <div>
+                        Once you have downloaded the application,&nbsp;<a href="#installation">install</a> the application on your server and sign in to your dashboard.&nbsp;</div>
+                    <ul>
+                        <li>
+                            Add your customers by going to the <a href="#clients">Clients</a> view. You can access any view by clicking on the menus from the left sidebar.</li>
+                        <li>
+                            &nbsp;Add your projects from the <a href="#projects">Projects</a> view. Once you have created any project you are ready to add tasks, mile stones, files, comments, notes and invoices to the project. If you would like to track the time of your project, simply you can use the start timer button located in each project details view.</li>
+                        <li>
+                            Do you have a team and you want to collaborate with them? You can invite or add manually your team members from the <a href="#team_members">Team members</a> view. Once you&#39;ve added the team members then you can add the members in your projects, assign them to tasks, send <a href="#messaging">messages</a>, <a href="#timeline">share</a> ideas and files, store their personal, social and work information, etc.</li>
+                        <li>
+                            Do you want to track <a href="#time_cards">attendance</a> or daily time reporting of your team members? This application makes easy to time reporting. The team members can report the daily time cards by using the <strong>Clock In </strong>and <strong>Clock Out</strong> button located in dashboard. They can also submit the <a href="#leave">leave</a> applications for their absences.</li>
+                        <li>
+                            You can create invoices and send the invoices to your <a href="#clients">clients</a> from the <a href="#invoices_payments">Invoices</a> view. Make sure you have configured your&nbsp;<a href="#settings">email settings</a>&nbsp; before sending any email.</li>
+                        <li>
+                            Do you interested to provide a smart support to your customers? There is a client portal in this application. &nbsp;Your clients can login to the client portal and submit their support tickets. You can easily manage the tickets from the <a href="#support_tickets">Support tickets</a> view.</li>
+                        <li>
+                            To make this application more suitable to you please have a look at the&nbsp;<a href="#settings">Settings</a>&nbsp;page and change the settings according to your needs.&nbsp;</li>
+                    </ul>
+                    <p>
+                        To learn more about the application please check all parts of this documentation. In this documentation, we&#39;ll describe different parts according to the screenshots.</p>
+                    <div>
+                        &nbsp;</div>
+                </section>
+
+                <section id="features">
+                    <div class="page-header"><h3>Features</h3><hr class="notop"></div>
+                    <ul>
+                        <li>
+                            Easily accessible UI</li>
+                        <li>
+                            Project management</li>
+                        <li>
+                            Client management</li>
+                        <li>
+                            Team management;</li>
+                        <li>
+                            Team conversation</li>
+                        <li>
+                            Private messaging with team members and clients</li>
+                        <li>
+                            Tasks, milestones, gantt, notes, files and customer feedback </li>
+                        <li>
+                            Project timesheet and time tracker</li>
+                        <li>
+                            Drag and drop facility for files</li>
+                        <li>
+                            Custom Fields</li>
+                        <li>
+                            Web and email notifications</li>
+                        <li>
+                            Client portal</li>
+                        <li>
+                            All reports of any client in a single page</li>
+                        <li>
+                            Informative profile page for client contacts</li>
+                        <li>
+                            Estimate requests</li>
+                        <li>
+                            Estimates</li>
+                        <li>
+                            Support tickets</li>
+                        <li>
+                            Invoice management</li>
+                        <li>
+                            Invoice pdf, online payment (PayPal and Stripe) </li>
+                        <li>
+                            Expense &amp; payments report</li>
+                        <li>
+                            Custom role (permissions) for team members</li>
+                        <li>
+                            Event calendar</li>
+                        <li>
+                            Private notes</li>
+                        <li>
+                            Customizable email templates</li>
+                        <li>
+                            Timecard/attendance management</li>
+                        <li>
+                            IP restriction for timecard entry</li>
+                        <li>
+                            Leave management</li>
+                        <li>
+                            Team member&#39;s details view</li>
+                        <li>
+                            Announcement/notice management</li>
+                        <li>
+                            Report printing and export</li>
+                        <li>
+                            Dynamic graph and visual report</li>
+                        <li>
+                            Activity logs for projects</li>
+                        <li>
+                            Install updates in a click</li>
+                        <li>
+                            Enable/Disable modules</li>
+                        <li>
+                            Codeigniter 3.1.5</li>
+                        <li>
+                            And more...</li>
+                    </ul>
+                    <p>
+                        &nbsp;</p>
+                </section>
+                <section id="installation">
+                    <div class="page-header"><h3>Installation</h3><hr class="notop"></div>
+                    <h5>
+                        Server Requirements</h5>
+                    <ul style="margin: 18px 0px; padding-right: 0px; padding-left: 0px; border: 0px; outline: 0px; font-size: 13px; font-family: 'Open Sans', Arial, verdana, arial, sans-serif; vertical-align: baseline; line-height: 1.5em; color: rgb(56, 56, 56);">
+                        <li>
+                            Apache with PHP and MySQL server</li>
+                        <li>
+                            PHP v5.6+</li>
+                        <li>
+                            MySql</li>
+                        <li>
+                            CURL enabled</li>
+                        <li>
+                            Latest OpenSSL installed</li>
+                        <li>
+                            date.timezone setting enabled</li>
+
+                    </ul>
+                    <h5>
+                        Quick Installation Guide</h5>
+                    <ul style="padding-right: 0px; padding-left: 0px; margin: 18px 0px; border: 0px; outline: 0px; font-size: 13px; font-family: 'Open Sans', Arial, verdana, arial, sans-serif; vertical-align: baseline; line-height: 1.5em; color: rgb(56, 56, 56);">
+                        <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                            <span style="font-weight: inherit;">Unzip the </span><b>RISE-Ultimate-Project-Manager.zip&nbsp;</b><span style="font-weight: inherit;">which you have downloaded from the Envato Market.</span></li>
+                        <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                            Upload the files to your sever using any FTP client.</li>
+                        <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                            The file structure should be look like this:
+                            <ul>
+                                <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                                    /application</li>
+                                <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                                    /assets</li>
+                                <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                                    /documentation</li>
+                                <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                                    /files</li>
+                                <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                                    /install</li>
+                                <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                                    /system</li>
+                                <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                                    /updates</li>
+                                <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                                    /index.php</li>
+                            </ul>
+                        </li>
+                        <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                            Create a <strong>MySql</strong> Database via your web hosting providers Control Panel (e.g.&nbsp;<span style="margin: 0px; padding: 0px; border: 0px; outline: 0px; font-weight: 700; vertical-align: baseline;">cPanel</span>). Once you have created the database, remember the following information:
+                            <ul>
+                                <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                                    Database Name</li>
+                                <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                                    Database Username</li>
+                                <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                                    Database Password</li>
+                            </ul>
+                        </li>
+                        <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                            Open your web browser and enter the url (<strong>http://yourdomain.com </strong>or&nbsp;<strong>http://yourdomain.com/foldername</strong>) in the address bar.</li>
+                        <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                            If everything is ok, you should get the installation page.</li>
+                        <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                            Follow the instructions and click on the&nbsp;<strong>Next </strong>button. Then enter the database details which you have collected earlier. Finally, enter your name, email and password which will be required to login in the application. Then click on the&nbsp;<strong>Finish </strong>button and wait a while. The system will create necessary tables in database, files and configuration.</li>
+                        <li style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                            That&#39;s all! After completing the installation delete the installation folder and login to your dashboard.</li>
+                    </ul>
+                    <p style="margin: 0px 0px 0px 36px; padding: 4px 0px; border: 0px; outline: 0px; font-weight: inherit; font-style: inherit; font-family: inherit; vertical-align: baseline; list-style: square;">
+                        &nbsp;</p>
+                </section>
+                <section id="clients">
+                    <div class="page-header"><h3>Clients</h3><hr class="notop"></div>
+                    <p>
+                        You can create and manage your customers in clients section.&nbsp;</p>
+                    <p>
+                        <img alt="clients-list" src="assets/images/clients-list.jpg"></p>
+                    <h5>
+                        List of Clients</h5>
+                    <ol>
+                        <li>
+                            Create new client using the <strong>Add client</strong> button.</li>
+                        <li>
+                            Search the existing clients which already added in this application.</li>
+                        <li>
+                            To see the details information of the client click on the Company name link.</li>
+                        <li>
+                            If you need to edit the client&#39;s information you can do it using the edit button.</li>
+                        <li>
+                            To delete the client use the delete button. Once you click on the button, the system will delete the client and you will have a chance to undo the action within 10 seconds. If you don&#39;t undo the action, the system will delete the client permanently&nbsp;and you will not be able to revert the client anyway!</li>
+                    </ol>
+                    <h5>
+                        Add new client</h5>
+                    <ol>
+                        <li>
+                            The company name is an organization you or your organization works for. Even if your client is a person you have to add the information as a company. After creating any client you can add contacts of that client.</li>
+                        <li>
+                            &nbsp;You can define different currency for different clients. It&#39;s useful when you are working with a foreign client which currency symbol is different from your default currency symbol. By default the invoices of the client will be generated using the default currency symbol if you don&#39;t define any currency symbol with that specific client.</li>
+                    </ol>
+                    <h5>
+                        Client Details</h5>
+                    <p>
+                        <img alt="client-details" src="assets/images/client-details.jpg"></p>
+                    <ol>
+                        <li>
+                            Click on the <strong>Edit </strong>button to edit any information of the client.</li>
+                        <li>
+                            The contacts tab contains the list of contacts of the client. You can add one or more contact by clicking on the <strong>Add contact </strong>button.</li>
+                        <li>
+                            To send an invitation to any user for the client, use the <strong>Send invitation</strong> button.</li>
+                        <li>
+                            Projects tab contains all projects of the client.</li>
+                        <li>
+                            Invoices tab contains all invoices of the client.</li>
+                        <li>
+                            Payments tab contains all payments of the client.</li>
+                        <li>
+                            Tickets tab contains all tickets of the client.</li>
+                        <li>
+                            To delete any contact from the client, use the delete button. Once you delete any contact you can undo the action within 10 seconds. If you don&#39;t undo the action the contact will be deleted from the client permanently&nbsp;and the contact will not be able to login in the client portal.</li>
+                    </ol>
+                </section>
+                <section id="projects">
+                    <div class="page-header"><h3>Projects</h3><hr class="notop"></div>
+                    <p>
+                        You can create and manage your projects here.</p>
+                    <p>
+                        <img alt="projects-list" src="assets/images/projects-list.jpg"></p>
+                    <h5>
+                        List of Projects</h5>
+                    <ol>
+                        <li>
+                            Create new project using the Add project button.</li>
+                        <li>
+                            To see the details information of the project click on the project title link.</li>
+                        <li>
+                            By default the deadline color is black. If the deadline expires by today then the deadline color will be changed to orange and all expired deadline will be red color for non-completed projects.</li>
+                        <li>
+                            The progress bar indicates the total progression of the project. To generate this progress bar, we calculate the total completed and non-completed tasks. The tasks points are important to calculate the progression.
+                            <br>
+                            Example: If there are 10 tasks with 1 point in each tasks, the project's total point will be 10.
+                            Whenever 5 of the tasks gets completed (Task status = Done), the total progress of the project will be (5*100)/10 = 50%.
+                            <br>
+                            Same logic applied on the milestone progress bar.
+                        </li>
+                        <li>
+                            To filter the projects quickly, you can click on the radio buttons.</li>
+                    </ol>
+                    <h5>
+                        Project Details</h5>
+                    <p>
+                        <img alt="project-details" src="assets/images/project-details.jpg"></p>
+                    <ol>
+                        <li>
+                            To track the project time you can use the <strong>Start time </strong>button. Once you click on the <strong>Start time</strong> button the timer will be turned on. When you want to stop tracking the time you have to click on the <strong>Stop timer </strong>button.</li>
+                        <li>
+                            The project progression chart represents the total progression of the project.</li>
+                        <li>
+                            You can see the total tasks status of the project from the chart.</li>
+                        <li>
+                            Activity timeline represents the project history.&nbsp;</li>
+                        <li>
+                            To add new member in this project, click on the <strong>Add member</strong> button and select the user.</li>
+                    </ol>
+                </section>
+                <section id="invoices_payments">
+                    <div class="page-header"><h3>Invoices & Payments</h3><hr class="notop"></div>
+                    <p>
+                        You can create and manage your invoices from the <strong>Invoices </strong>menu.</p>
+                    <p>
+                        <img alt="invoices" src="assets/images/invoices.jpg"></p>
+                    <h5>
+                        List of Invoices</h5>
+                    <ol>
+                        <li>
+                            Create new invoice using the <strong>Add invoice</strong> button.</li>
+                        <li>
+                            To see the details information of the invoice click on the invoice id link.</li>
+                        <li>
+                            The invoice status represents the different states of the invoice. By default any invoice will be create with Draft status. Once you sent the invoice to the client then the invoice status will be changed to Sent. Once you receive any payment the invoice status will be changed to <strong>Fully paid</strong> or <strong>Partially Paid</strong>.&nbsp;</li>
+                    </ol>
+                    <h5>
+                        Invoice Details</h5>
+                    <p>
+                        <img alt="invoice-details" src="assets/images/invoice-details.jpg"></p>
+                    <ol>
+                        <li>
+                            To add any item/product in the invoice, click on <strong>Add item</strong> button.</li>
+                        <li>
+                            If you want to edit the inserted item, you can click on the edit button of invoice item row.</li>
+                        <li>
+                            By clicking on delete button in invoice item row, you can delete the item from the invoice.</li>
+                        <li>
+                            To send a <strong>pdf</strong> copy of the invoice to the client, click on the <strong>Email invoice to client</strong> menu.</li>
+                        <li>
+                            You can download a <strong>pdf</strong> version of the invoice using the <strong>Download PDF</strong> menu.</li>
+                        <li>
+                            To edit any information in the invoice click on the <strong>Edit invoice</strong> menu under the <strong>Actions </strong>dropdown.</li>
+                        <li>
+                            By clicking on the <strong>Add payment</strong> button you will get a modal to add payment in the invoice.</li>
+                    </ol>
+                </section>
+                <section id="expenses">
+                    <div class="page-header"><h3>Expenses</h3><hr class="notop"></div>
+                    <p>
+                        In this application the expenses are located in under the <strong>Finance </strong>menu. Click on the <strong>Expenses</strong> menu to access the expenses page. Only admin and allowed team members can access the Expenses page. Admin can define the role of a member to access the expenses.</p>
+                    <p>
+                        The expenses view represents a list of expenses. Admin can add new expense categories from the Settings section.&nbsp;</p>
+                </section>
+                <section id="support_tickets">
+                    <div class="page-header"><h3>Support Tickets</h3><hr class="notop"></div>
+                    <p>
+                        In this application you can create any support ticket on behalf of your client or client can create any support ticket for himself.&nbsp;</p>
+                    <p>
+                        <img alt="tickets" src="assets/images/tickets.jpg"></p>
+                    <h5>
+                        List of Tickets</h5>
+                    <ol>
+                        <li>
+                            Create new ticket using the <strong>Add ticket </strong>button.</li>
+                        <li>
+                            To see the details information of the ticket click on the <strong>ticket title</strong> link.</li>
+                    </ol>
+                </section>
+                <section id="team_members">
+                    <div class="page-header"><h3>Team Members</h3><hr class="notop"></div>
+                    <p>
+                        Using this application you can manage your team members easily.&nbsp;</p>
+                    <p>
+                        <img alt="team" src="assets/images/team-card.jpg"></p>
+                    <p>
+                        There are two views for team members.</p>
+                    <ol>
+                        <li>
+                            Whenever you want to add a new team member in this application, you can send invitation to the users email. The user will get an email with the signup instructions.</li>
+                        <li>
+                            Instead of sending invitation to the team members, you can add any team member manually, using the <strong>Add member </strong>button.</li>
+                        <li>
+                            To view the details of any team member, click on the <strong>view details</strong> link.</li>
+                    </ol>
+                    <h5>
+                        Team member&#39;s Details</h5>
+                    <p>
+                        In team member&rsquo;s&nbsp;details view, you can see the details information about any member at a glance.&nbsp;</p>
+                    <ol>
+                        <li>
+                            The <strong>Timeline </strong>tab represents all the posts of the member.</li>
+                        <li>
+                            You can view or update the basic information of the member from the <strong>General Info</strong> tab.</li>
+                        <li>
+                            Manage social links from the <strong>Social Links</strong> tab.</li>
+                        <li>
+                            You can manage the login or access role from the the <strong>Accounts settings&nbsp;</strong>tab.</li>
+                        <li>
+                            The<strong> Job info</strong> tab represents the job title, salary and the other job related information.</li>
+                        <li>
+                            To see the details list of the member&#39;s attendance, check the <strong>Time cards</strong> tab.</li>
+                        <li>
+                            From the <strong>Leave </strong>tab, you can see the details leave history for the team member.&nbsp;</li>
+                    </ol>
+                </section>
+                <section id="messaging">
+                    <div class="page-header"><h3>Messaging</h3><hr class="notop"></div>
+                    <p>	<img alt="message" src="assets/images/message.jpg"></p>
+                    <p>	All team members can send message to any team member. There are no restrictions to send messages for member to member.&nbsp;</p>
+                    <p>	Admin can control the messaging rule between team members and clients. From the Client settings, admin can set who can communicate with the clients. Only the selected members will be allowed to send/receive message to/from the clients.</p>
+                    <p>	Whenever you receive any new message, a notification icon will be appeared in the top right section in the application.</p>
+                </section>
+                <section id="events_notes">
+                    <div class="page-header"><h3>Events & Notes</h3><hr class="notop"></div>
+                    <h5>
+                        Events</h5>
+                    <p>
+                        The events page represents a calendar with all events. You can add new event in the calendar. Click on the calendar date to add any event on that specific date. You can define different colors for different events to make the view easier&nbsp;to see.</p>
+                    <p>
+                        By clicking on any event, you can see the details information about that event.</p>
+                    <h5>
+                        Notes</h5>
+                    <p>
+                        There are two kinds of note in this application. In dashboard, you can save any quick note in <strong>Sticky Note.&nbsp;</strong>In this application all notes are private (Only you can see your notes).</p>
+                    <p>
+                        There are other&nbsp;notes in the Notes page. You can add any private note here. If you add any note in any projects that notes also will be appeared in the notes list.</p>
+                </section>
+                <section id="timeline">
+                    <div class="page-header"><h3>Timeline</h3><hr class="notop"></div>
+                    <p>	Timeline is a collaboration/conversation area of the team members. All team members can see this view. It&#39;s a best place to share any idea or files among the team members.</p>
+                    <p>	<img alt="timeline" src="assets/images/timeline.jpg"></p>
+                    <p>	To share any file you can click on<strong> Upload File</strong> button or drag and drop files on the box. By default all file types are not supported to upload in the application. Admin can set the settings of accepted file formats in <strong>General Settings</strong> section.</p>
+                </section>
+                <section id="time_cards">
+                    <div class="page-header"><h3>Time Cards</h3><hr class="notop"></div>
+                    <p>
+                        The time cards section represents the attendance or total time log of each team members. Any team member can start clock from the dashboard by clicking on <strong>Clock In</strong> button. Once he/she clicks on the <strong>Clock In</strong> button the timer count starts. After clicking on the <strong>Clock Out</strong> button the timer stop counting the time for the team members.&nbsp;</p>
+                    <p>
+                        <img alt="timecard" src="assets/images/clockin-out.jpg"></p>
+                    <p>
+                        Admin or allowed members can add time manually for any team member.</p>
+                    <p>
+                        If admin wants to set any IP restriction for this module then he/she can set the allowed IP addresses in the <strong>IP Restriction Settings</strong> Section Under the <strong>Settings </strong>menu. Admin users are not applicable for this restriction. The admins are allowed to access the time card Clock In/Out from any IP address. The system will check the IP address of the non-admin team members.&nbsp;</p>
+                </section>
+                <section id="leave">
+                    <div class="page-header"><h3>Leave</h3><hr class="notop"></div>
+                    <p>	This application allows the leave management facility&nbsp;for the team members. The team member can apply for leave and the admins or&nbsp;superiors can approve/reject the leave application.</p>
+                    <p>	Admins and superiors&nbsp;can assign leave for subordinates. Admin can create various leave types from the <strong>Leave types</strong> Setting.&nbsp;</p>
+                </section>
+                <section id="announcements">
+                    <div class="page-header"><h3>Announcements</h3><hr class="notop"></div>
+                    <p>
+                        This application provides&nbsp;the announcement publishing feature. The admins and selected team members can create new announcement for team members and/or clients.&nbsp;</p>
+                    <p>
+                        The published announcement will be appeared&nbsp;in dashboard of each user. Once the user clicks on the announcement then it will not be appear&nbsp;in dashboard again. But the users can see the announcement from the <strong>Announcements </strong>menu anytime.</p>
+                </section>
+                <section id="settings">
+                    <div class="page-header"><h3>Settings</h3><hr class="notop"></div>
+                    <p>
+                        The application has various types of settings to make suitable according to your work. Here are some basic introductions about the settings.</p>
+                    <p>
+                        <img alt="settings" src="assets/images/settings.jpg"></p>
+                    <ul>
+                        <li>
+                            <strong>General Settings:&nbsp;</strong>In this section, you can change the application logo, title, localization settings, file type restriction&nbsp;and the item purchase code.</li>
+                        <li>
+                            <strong>Company Settings</strong>: Here you can set the company information which will be appeared&nbsp;in invoices.</li>
+                        <li>
+                            <strong>Email Settings</strong>: The email setting required for out-going emails. All emails will be sent using the settings. You can use either the default mail sending method of your server or SMTP.</li>
+                        <li>
+                            <strong>Roles Settings</strong>: &nbsp;It&#39;s a setting to set different access permission for different users. To add any role click on the <strong>Add role</strong> button. Once you create any role then you can set permission to the role by clicking on the role. You&#39;ll see different types of access permission and you can choose in your own way. After defining&nbsp;the roles you can set the role to any team member. Each team member can have one role at a time. By default all team members has the <strong>Team Member</strong> role. To change the role of any team member, go to the team member&rsquo;s&nbsp; details view and click on the <strong>Account settings</strong> tab and choose your&nbsp;desired role for the member.</li>
+                        <li>
+                            <strong>IP Restriction Settings</strong>: If you would like to prevent accessing the Clock In/Clock Out of Time card from unauthorized IP, you can add authorized IP address here.</li>
+                        <li>
+                            <strong>Client Settings</strong>: In this area you can control the client login/signup and the message sending rule between client and team members.</li>
+                        <li>
+                            <strong>Team Settings</strong>:&nbsp;You can define different team or group of your team members. Useful when you want to create any role where the one or more members have the same power. In future we&#39;ll add more feature using the team.</li>
+                        <li>
+                            <strong>Leave types</strong>: You can create various leave types from here.&nbsp;</li>
+                        <li>
+                            <strong>Ticket types</strong>: You can create various ticket types from here.&nbsp;</li>
+                        <li>
+                            <strong>Expense Categories:</strong> There could be various expense types in your business; you can add the types here.</li>
+                        <li>
+                            <strong>Taxes Settings</strong>: In this application the taxes are using in Invoices. You can define different taxes name and percentage here.</li>
+                        <li>
+                            <strong>Payment Methods</strong>: To receive any payment through invoice the payment methods are required. Add your required payment methods in this section.</li>
+                        <li>
+                            <strong>Email templates</strong>: The application has some default email templates which are using to send different emails. You can change the appearance of the email templates as you like.</li>
+                    </ul>
+                    <p>
+                        &nbsp;</p>
+                </section>
+                <section id="notifications">
+                    <div class="page-header"><h3>Notifications</h3><hr class="notop"></div>
+
+                    <p>
+                        You can customize the app notifications. Please have a look at Settings>Notification setting. There are options for email and web notification for all events. You can enable both or as you prefer. </p>
+                    <p>
+                        <img alt="rise-notifications" src="assets/images/notifications.png"></p>
+                    <div class="alert alert-warning" id='notifications-not-working'>Notifications are not working?</div>
+                    <p>
+                        Please make sure you are using latest version of <a href="https://www.openssl.org/source/" target="_blank">OpenSSL.</a> You can check the OpenSSL version and released date in your server from phpinfo. If you don't know how to check the phpinfo just add a php file (phpinfo.php) in your server inside the RISE directory:
+                        <textarea style='display:block; height: 60px; width: 300px; resize: none;'>
+    <?php 
+     phpinfo();
+    ?>
+                        </textarea>
+                        Then browse the file from your browser. Like as http://yourdomain.com/phpinfo.php. If you can't update the OpenSSL, please contact to your hosting service provider.
+                    </p>
+                    <p>Please also keep in mind that you'll not get notifications for your own actions.</p>
+
+                </section>
+                <section id="upgrading_guide">
+                    <div class="page-header"><h3>Upgrading Guide</h3><hr class="notop"></div>
+                    <p>
+                        Please note that you can only download the updates if you have a valid purchase code. Enter the valid purchase code in general settings of this application and save the settings.</p>
+                    <div class="alert alert-error">
+                        Please backup all files and database before start the installation of updates.</div>
+                    <p>
+                        There is a very&nbsp;easy way to update your application.</p>
+                    <p>
+                        To install any updates go to <strong>Settings&gt;Updates&nbsp;</strong>of the application. The download will be start automatically once any new update is available. Once the download is completed you can install the updates by clicking on the link. That&rsquo;s&nbsp;all!</p>
+                    <p>
+                        &nbsp;</p>
+                    <p>
+                        &nbsp;</p>
+                </section>
+                <section id="application_structure">
+                    <div class="page-header"><h3>Application Structure</h3><hr class="notop"></div>
+                    <p>
+                        <img alt="application-structure" src="assets/images/application-structure.jpg"></p>
+                    <ol>
+                        <li>
+                            The config folder&nbsp;contains all configuration related files.</li>
+                        <li>
+                            The controllers folder contains all business logic of the application.</li>
+                        <li>
+                            If you would like to add any new language then create a new folder and add the custom_lang.php and default_lang.php. Please keep it in mind that you shouldn&#39;t change anything in the default_lang.php. If you would like to add/update any language, then update the custom_lang.php. When you install any new updates then the defult_lang.php could be change. So update your custom_lang.php manually (if required) after installing new updates. To change the language of the application, go to the Settings&gt;General settings section and choose your language then save the settings.</li>
+                        <li>
+                            Views folder contains all the view related files.</li>
+                        <li>
+                            Assets folder contains all css, js and images of the application.</li>
+                        <li>
+                            Don&#39;t change anything in system folder. It&#39;s contains the core functions of the application.</li>
+                    </ol>
+                    <p>
+                        To learn more about the application you can learn the <strong>codeigniter&nbsp;</strong>framework.</p>
+                    <p>
+                        &nbsp;</p>
+                </section>
+                <section id="language">
+                    <div class="page-header"><h3>Language</h3><hr class="notop"></div>
+                    <strong>How to add new language?</strong>
+                    <ol>
+                        <li>Please go to \application\language directory </li>
+                        <li>
+                            Copy the english language folder and paste (set the directory name for your language)</li>
+                        <li>
+                            Add your translations in default_lang.php</li>
+                        <li>
+                            Finally set this language in application from Settings>General Settings>Language.</li>
+                    </ol>
+                    <strong>How to improve existing language?</strong>
+                    <ol>
+                        <li>Please go to \application\language\[your language] directory </li>
+                        <li>
+                            Copy the default_lang.php and paste all to custom_lang.php </li>
+                        <li>
+                            Change the custom_lang.php.</li>
+                    </ol>
+                    <strong>How to share my language?</strong>
+                    <ol>
+                        <li> Please update your language in <a href="https://github.com/fairsketch/RISE-Translation">Github</a></li>
+                        <li>
+                            Or email to <a href="mailto:support@fairsketch.com" target="_top">support@fairsketch.com</a> </li>
+                    </ol>
+
+
+                </section>
+                <section id="development">
+                    <div class="page-header"><h3>Development</h3><hr class="notop"></div>
+                    <strong>How to add new pages?</strong>
+                    <ol>
+                        <li> If you want to add any restricted page (login required?), please extend the controller from MY_Controller</li>
+                        <li> If you want to add any public page (login not required), extend the controller from CI_Controller</li>
+                    </ol>
+                    <strong>How to add new menu item in left sidebar?</strong>
+                    <ol>
+                        <li> You can add menu item from this file \application\views\includes\left_menu.php</li>
+                    </ol>
+                    <strong>How to save?</strong>
+                    <ol>
+                        <li> All models are extended from Crud_model (\application\models\Crud_model.php)</li>
+                        <li> Please check the add/edit/remove and basice i/o functions there.</li>
+                    </ol>
+                    <strong>How to create the table list view?</strong>
+                    <ol>
+                        <li> Please see example in any page where table shown.</li>
+                        <li> The table list is using datatable plugin but we've developed a library to manage it easily. Please have a look at  \assets\js\app.js</li>
+                        <li> In application, we are using the assets\js\app.min.js</li>
+                    </ol>
+                    <strong id='enable-error-log'>How to enable error log?</strong>
+                    <ol>
+                        <li> Open \index.php line #58 and change the line to: define('ENVIRONMENT', 'development');</li>
+                        <li> Open \application\config\config.php line #254 and change the line to: $config['log_threshold'] = 1;</li>
+                        <li> Do the actions which you want to debug. Then find the log in \application\logs\ directory.;</li>
+                        <li> <b>Note</b>: Once you've completed the debugging, please remember to revert the settings back. Otherwise it'll create unnecessary log in your server and waste space. To revert:</li>
+                        <li> Open \index.php line #58 and change the line to: define('ENVIRONMENT', 'production');</li>
+                        <li> Open \application\config\config.php line #254 and change the line to: $config['log_threshold'] = 0;</li>
+                      
+                    </ol>
+                    
+                </section>
+                <section id="thanks">
+                    <div class="page-header"><h3>Thanks</h3><hr class="notop"></div>
+                    <p>
+                        Thanks again to purchase this application. We are trying to add and improve new features regularly. Hopefully you'll enjoy using the app. If you have any query or suggestion, please send an email to <a href="mailto:support@fairsketch.com" target="_top">support@fairsketch.com</a></p>
+                    <p>
+                        Best wishes<br>
+                        Fairsketch Team</p>
+                    <p>
+                        <a href="http://codecanyon.net/user/fairsketch">http://codecanyon.net/user/fairsketch</a></p>
+                </section>
+
+            </div>
+        </body>
+    </html>
