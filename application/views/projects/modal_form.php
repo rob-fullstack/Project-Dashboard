@@ -98,7 +98,7 @@
             echo form_input(array(
                 "id" => "members",
                 "name" => "members",
-                "value" => $member_ids,
+                "value" => $model_info->unique_project_id ? $member_ids : "",
                 "class" => "form-control",
                 "placeholder" => lang('project_members')
             ));
@@ -146,7 +146,7 @@
         </div>
     <?php } ?>
 
-    <?php $this->load->view("custom_fields/form/prepare_context_fields", array("custom_fields" => $custom_fields, "label_column" => "col-md-3", "field_column" => " col-md-9")); ?> 
+    <?php $this->load->view("custom_fields/form/prepare_context_fields", array("custom_fields" => $custom_fields, "label_column" => "col-md-3", "field_column" => " col-md-9")); ?>
 
 
 </div>
@@ -177,7 +177,13 @@
         $("#title").focus();
         $("#project-form .select2").select2();
 
-        $('#members').select2({ multiple: true, data: <?php echo $members; ?> }); 
+        $('#members').select2({ multiple: true, data: <?php echo $members; ?> });
+        $('#members').on("change", function(e) {
+          const id = e.removed.id;
+          $.post('<?php echo get_uri('projects/delete_project_member')?>', {id: id}, function(response){
+              console.log(response);
+          });
+        });
 
         setDatePicker("#start_date, #deadline");
 
@@ -185,4 +191,4 @@
             tags: <?php echo json_encode($label_suggestions); ?>
         });
     });
-</script>    
+</script>

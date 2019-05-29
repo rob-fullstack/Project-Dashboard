@@ -94,7 +94,7 @@ class Projects extends MY_Controller {
                 }else{
                    return true;
                 }
-                
+
             }
         } else {
             //check settings for client's project permission
@@ -398,13 +398,18 @@ class Projects extends MY_Controller {
         }
         $view_data['label_suggestions'] = $label_suggestions;
 
+        $project_members = $this->_project_modal_member_list($project_id);
+
         $members = $this->Users_model->get_all_where(array("user_type" => "staff", "deleted" => 0))->result();
-        $view_data["members"] = json_encode(array_map(function($member) {
+        $view_data["members"] = json_encode(array_map(function($member, $proj_member) {
             return array(
                 "id" => $member->id,
-                "text" => "{$member->first_name} {$member->last_name}"
+                "text" => "{$member->first_name} {$member->last_name}",
+                //"table-id" => "{}"
             );
-        }, $members));
+        }, $members, $project_members));
+
+        $view_data['project_data_member'] = json_encode(array("data"=>$this->_project_modal_member_list($project_id)));
 
         $view_data['member_ids'] = $this->_get_project_member_ids($project_id);
 
@@ -451,7 +456,7 @@ class Projects extends MY_Controller {
             "labels" => $this->input->post('labels'),
             "status" => $this->input->post('status') ? $this->input->post('status') : "open",
         );
-        
+
 
         if (!$id) {
             $data["created_date"] = get_current_utc_time();
@@ -467,7 +472,7 @@ class Projects extends MY_Controller {
         $data = clean_data($data);
 
 
-        //set null value after cleaning the data 
+        //set null value after cleaning the data
         if (!$data["start_date"]) {
             $data["start_date"] = NULL;
         }
@@ -561,7 +566,7 @@ class Projects extends MY_Controller {
 
     function save_cloned_project() {
 
-        ini_set('max_execution_time', 300); //300 seconds 
+        ini_set('max_execution_time', 300); //300 seconds
 
         $project_id = $this->input->post('project_id');
 
@@ -618,7 +623,7 @@ class Projects extends MY_Controller {
         $new_project_id = $this->Projects_model->save($data);
 
         //add milestones
-        //when the new milestones will be created the ids will be different. so, we have to convert the milestone ids. 
+        //when the new milestones will be created the ids will be different. so, we have to convert the milestone ids.
         $milestones_array = array();
 
         if ($copy_milestones) {
@@ -637,7 +642,7 @@ class Projects extends MY_Controller {
         }
 
 
-        //we'll keep all new task ids vs old task ids. by this way, we'll add the checklist easily 
+        //we'll keep all new task ids vs old task ids. by this way, we'll add the checklist easily
         $task_ids = array();
 
         //add tasks
@@ -645,7 +650,7 @@ class Projects extends MY_Controller {
             $tasks = $this->Tasks_model->get_all_where(array("project_id" => $project_id, "deleted" => 0))->result();
             foreach ($tasks as $task) {
 
-                //prepare new task data. 
+                //prepare new task data.
                 $task->project_id = $new_project_id;
                 $milestone_id = get_array_value($milestones_array, $task->milestone_id);
                 $task->milestone_id = $milestone_id ? $milestone_id : "";
@@ -898,7 +903,7 @@ class Projects extends MY_Controller {
                 $dateline = "<span class='text-danger mr5'>" . $dateline . "</span> ";
             } else if ($progress != 100 && $data->status === "open" && get_my_local_time("Y-m-d") == $data->deadline) {
                 $dateline = "<span class='text-warning mr5'>" . $dateline . "</span> ";
-            } else if($progress == 100 && $data->status === "completed" ) {  
+            } else if($progress == 100 && $data->status === "completed" ) {
                 $dateline = "<span class='text-success mr5'>" . $dateline . "</span> ";
             }
         }
@@ -1203,7 +1208,7 @@ class Projects extends MY_Controller {
                 $project_member_info = $this->Project_members_model->get_one($id);
 
                 log_notification("project_member_deleted", array("project_id" => $project_member_info->project_id, "to_user_id" => $project_member_info->user_id));
-                echo json_encode(array("success" => true, 'message' => lang('record_deleted')));
+                echo json_encode(array("success" => true, 'message' => lang('record_deleted'), 'id' => $id));
             } else {
                 echo json_encode(array("success" => false, 'message' => lang('record_cannot_be_deleted')));
             }
@@ -1223,6 +1228,21 @@ class Projects extends MY_Controller {
             $result[] = $this->_make_project_member_row($data);
         }
         echo json_encode(array("data" => $result));
+    }
+
+    private function _project_modal_member_list($project_id = 0) {
+      $this->access_only_team_members();
+      $this->init_project_permission_checker($project_id);
+
+      $options = array("project_id" => $project_id);
+      $list_data = $this->Project_members_model->get_details($options)->result();
+      $result = array();
+
+      foreach ($list_data as $data) {
+        $result[] = array('user_id'=>$data->user_id, 'data_id'=>$data->id);
+      }
+
+      return $result;
     }
 
     /* return project member ids */
@@ -1288,7 +1308,7 @@ class Projects extends MY_Controller {
             $this->load->view('projects/timesheets/stop_timer_modal_form', $view_data);
         }
     }
-    
+
 
     //show timer note modal
     function timer_note_modal_form() {
@@ -1325,7 +1345,7 @@ class Projects extends MY_Controller {
         echo $this->_get_timesheet_tasks_dropdown($project_id, true);
     }
 
-    
+
     private function _get_timesheet_tasks_dropdown($project_id, $return_json = false) {
         // $tasks_dropdown = array("" => "-");
         $tasks_dropdown = array();
@@ -1493,7 +1513,7 @@ class Projects extends MY_Controller {
             $project_members = $this->Project_members_model->get_project_members_dropdown_list($view_data['project_id'])->result(); //get all members of this project
         } else {
             $project_members = $this->Project_members_model->get_project_members_dropdown_list($view_data['project_id'], $allowed_members)->result();
-        } 
+        }
 
         $project_members_dropdown = array();
         $show_porject_members_dropdown = false;
@@ -1567,7 +1587,7 @@ class Projects extends MY_Controller {
         }
 
         $this->check_timelog_updte_permission($id, get_array_value($data, "user_id"));;
-        
+
 
         $save_id = $this->Timesheets_model->save($data, $id);
         if ($save_id) {
@@ -1617,7 +1637,7 @@ class Projects extends MY_Controller {
 
         //check edit permission
         $this->check_timelog_updte_permission($id);
-        
+
 
 
         $save_id = $this->Timesheets_model->save($data, $id);
@@ -2453,7 +2473,7 @@ class Projects extends MY_Controller {
             if(!$this->can_manage_all_projects()){
                 $project_options["user_id"] = $this->login_user->id; //normal user's should be able to see only the projects where they are added as a team mmeber.
             }
-            
+
             $projects = $this->Projects_model->get_details($project_options)->result();
             $projects_dropdown = array("" => "-");
 
@@ -2796,7 +2816,7 @@ class Projects extends MY_Controller {
         );
 
         if (!$this->can_manage_all_projects()) {
-            $options["project_member_id"] = $this->login_user->id; //don't show all tasks to non-admin users 
+            $options["project_member_id"] = $this->login_user->id; //don't show all tasks to non-admin users
         }
 
 
@@ -3717,7 +3737,7 @@ class Projects extends MY_Controller {
         if ($sort_values) {
             //extract the values from the comma separated string
             $sort_array = explode(",", $sort_values);
-            
+
             //update the value in db
             foreach ($sort_array as $value) {
                 $sort_item = explode("-", $value); //extract id and sort value
@@ -3879,7 +3899,7 @@ class Projects extends MY_Controller {
         $total_time = sprintf('%02d:%02d:%02d', $total_hours, $total_minutes, $total_seconds);
 
         // Work Day = Total Hours / 8 hours
-        
+
         $new_total_hours = $total_hours;
         $new_total_hours = ($total_minutes / 60) + $new_total_hours;
         $new_total_hours = (($total_seconds / 60) / 60) + $new_total_hours;
@@ -3945,7 +3965,7 @@ class Projects extends MY_Controller {
         if (count($eligibles) === 0) {
             return;
         }
-        
+
         // For each project managers, send an email
         foreach ($eligibles as $manager) {
             if ($type === 'project') {
