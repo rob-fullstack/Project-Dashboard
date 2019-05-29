@@ -396,20 +396,30 @@ class Projects extends MY_Controller {
         if (!count($label_suggestions)) {
             $label_suggestions = array("0" => "");
         }
-        $view_data['label_suggestions'] = $label_suggestions;
 
-        $project_members = $this->_project_modal_member_list($project_id);
-
+        $view_data['label_suggestions'] = $label_suggestions;        
         $members = $this->Users_model->get_all_where(array("user_type" => "staff", "deleted" => 0))->result();
-        $view_data["members"] = json_encode(array_map(function($member, $proj_member) {
-            return array(
-                "id" => $member->id,
-                "text" => "{$member->first_name} {$member->last_name}",
-                //"table-id" => "{}"
-            );
-        }, $members, $project_members));
+        $members_list = $this->_project_modal_member_list($project_id);
 
-        $view_data['project_data_member'] = json_encode(array("data"=>$this->_project_modal_member_list($project_id)));
+        $array_members = array();
+        foreach($members as $key => $member) {
+            $array_members[] = array("id"=> $member->id, "text"=> $member->first_name.' '.$member->last_name, "data-id"=> "");
+        }
+
+        $project_members = array();
+        foreach($members_list as $list_member){
+            $project_members[] = array("id"=> $list_member->id, "text"=> $list_member->text, "data-id"=> $list_member->data_id);
+        }
+
+        $merged = array_merge($project_members, $array_members);
+
+        $view_data["members"] = json_encode(array_map(function($select_member) {
+            return array(
+                "id" => $select_member['id'],
+                "text" => "{$select_member['text']}",
+                "table_id" => "{$select_member['data-id']}"
+            );
+        }, $merged));
 
         $view_data['member_ids'] = $this->_get_project_member_ids($project_id);
 
@@ -1239,7 +1249,11 @@ class Projects extends MY_Controller {
       $result = array();
 
       foreach ($list_data as $data) {
-        $result[] = array('user_id'=>$data->user_id, 'data_id'=>$data->id);
+        $mem_object = new stdClass();
+        $mem_object->id = $data->user_id;
+        $mem_object->data_id = $data->id;
+        $mem_object->text = $data->member_name;
+        $result[] = $mem_object;
       }
 
       return $result;
