@@ -1,5 +1,3 @@
-
-        <?php print_r($members);?>
 <?php echo form_open(get_uri("projects/save"), array("id" => "project-form", "class" => "general-form", "role" => "form")); ?>
 <div class="modal-body clearfix">
     <input type="hidden" name="id" value="<?php echo $model_info->id; ?>" />
@@ -172,7 +170,7 @@
         });
 
         $('#project-form').on('submit', function(){
-            var member_ids = $('#members').select2('val');
+            var member_ids = $('#members').val();
         });
 
         $("#title").focus();
@@ -181,8 +179,11 @@
         $('#members').select2({ multiple: true, data: <?php echo $members; ?> });
         $('#members').on("change", function(e) {
           const removed = e.removed;
+          const updated = e.val.join(',');
+          console.log(updated);
+          $('input#members').val(updated);
           $.post('<?php echo get_uri('projects/delete_project_member')?>', {"id": removed.table_id}, function(response){
-              console.log(response);
+              //console.log(response);
           });
         });
 
