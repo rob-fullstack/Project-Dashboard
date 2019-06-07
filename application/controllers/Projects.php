@@ -397,7 +397,7 @@ class Projects extends MY_Controller {
             $label_suggestions = array("0" => "");
         }
 
-        $view_data['label_suggestions'] = $label_suggestions;        
+        $view_data['label_suggestions'] = $label_suggestions;
         $members = $this->Users_model->get_all_where(array("user_type" => "staff", "deleted" => 0))->result();
         $members_list = $this->_project_modal_member_list($project_id);
 
@@ -1244,19 +1244,21 @@ class Projects extends MY_Controller {
       $this->access_only_team_members();
       $this->init_project_permission_checker($project_id);
 
-      $options = array("project_id" => $project_id);
-      $list_data = $this->Project_members_model->get_details($options)->result();
-      $result = array();
+      if($project_id != 0){
+        $options = array("project_id" => $project_id);
+        $list_data = $this->Project_members_model->get_details($options)->result();
+        $result = array();
 
-      foreach ($list_data as $data) {
-        $mem_object = new stdClass();
-        $mem_object->id = $data->user_id;
-        $mem_object->data_id = $data->id;
-        $mem_object->text = $data->member_name;
-        $result[] = $mem_object;
+        foreach ($list_data as $data) {
+          $mem_object = new stdClass();
+          $mem_object->id = $data->user_id;
+          $mem_object->data_id = $data->id;
+          $mem_object->text = $data->member_name;
+          $result[] = $mem_object;
+        }
+
+        return $result;
       }
-
-      return $result;
     }
 
     /* return project member ids */

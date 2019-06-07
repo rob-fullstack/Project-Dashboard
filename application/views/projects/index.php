@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="table-responsive">
-            <table id="project-table" class="display" cellspacing="0" width="100%">            
+            <table id="project-table" class="display" cellspacing="0" width="100%">
             </table>
         </div>
     </div>
@@ -53,6 +53,7 @@
                         {value: moment().add(15, 'days').format("YYYY-MM-DD"), text: "<?php echo sprintf(lang('in_number_of_days'), 15); ?>"}
                     ]}],
             columns: [
+              <?php if($this->login_user->is_admin){?>
                 {"data": 0, title: '<?php echo lang("id") ?>', "class": "w50"},
                 {"data": 1, title: '<?php echo lang("title") ?>', "class": "w300"},
                 {"data": 2, title: '<?php echo lang("client") ?>', "class": "w10p"},
@@ -66,10 +67,23 @@
                 // {title: '<?php echo lang("status") ?>', "class": "w10p"}
                 {"data": 9, title: '<?php echo lang("status") ?>'}
                 <?php echo $custom_field_headers; ?>,
-                <?php if($this->login_user->is_admin){?>
                 {"data": 3, visible: optionVisibility, title: '<?php echo lang("price") ?>', "class": "w50"},
-                <?php }?>
                 {visible: optionVisibility, title: '<i class="fa fa-bars"></i>', "class": "text-center option w100"}
+                <?php }else{?>
+                  {title: '<?php echo lang("id") ?>', "class": "w50"},
+                  {title: '<?php echo lang("title") ?>', "class": "w300"},
+                  {title: '<?php echo lang("client") ?>', "class": "w10p"},
+                  {visible: false, searchable: false},
+                  // {title: '<?php echo lang("start_date") ?>', "class": "w10p", "iDataSort": 4},
+                  {title: '<?php echo lang("start_date") ?>', "iDataSort": 4},
+                  {visible: false, searchable: false},
+                  // {title: '<?php echo lang("deadline") ?>', "class": "w10p", "iDataSort": 6},
+                  {title: '<?php echo lang("deadline") ?>', "iDataSort": 6},
+                  {title: '<?php echo lang("progress") ?>', "class": "w10p"},
+                  // {title: '<?php echo lang("status") ?>', "class": "w10p"}
+                  {title: '<?php echo lang("status") ?>'}
+                  <?php echo $custom_field_headers; ?>
+                <?php } ?>
             ],
             order: [[1, "desc"]],
             printColumns: combineCustomFieldsColumns([0, 1, 2, 3, 5, 7, 8, 9], '<?php echo $custom_field_headers; ?>'),
