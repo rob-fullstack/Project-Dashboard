@@ -505,6 +505,19 @@ class Projects extends MY_Controller {
                 $email = true;
             }
 
+            $member_ids = explode(",", $this->input->post("members"));
+
+            if (!empty($member_ids) && $member_ids !== null) {
+                 foreach ($member_ids as $member_id) {
+                     $member_data = array(
+                         "project_id" => $save_id,
+                         "user_id" => $member_id,
+                         "is_leader" => 0
+                     );
+                     $this->Project_members_model->save_member($member_data);
+                 }
+             }
+
             if ($id) {
 
                 if ($this->login_user->user_type === "staff") {
@@ -516,20 +529,6 @@ class Projects extends MY_Controller {
                         "is_leader" => 1
                     );
                     $this->Project_members_model->save_member($data);
-                }
-
-                $member_ids = explode(",", $this->input->post("members"));
-
-                if (!empty($member_ids) && $member_ids !== null) {
-                    foreach ($member_ids as $member_id) {
-                        $member_data = array(
-                            "project_id" => $save_id,
-                            "user_id" => $member_id,
-                            "is_leader" => 0
-                        );
-
-                        $this->Project_members_model->save_member($member_data);
-                    }
                 }
 
                 log_notification("project_created", array("project_id" => $save_id));
