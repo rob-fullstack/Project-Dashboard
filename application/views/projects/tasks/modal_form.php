@@ -163,6 +163,32 @@
             ?>
         </div>
     </div>
+    <div class="form-group">
+        <label for="artist-signoff" class=" col-md-3"><?php echo lang('artist_signoff'); ?></label>
+        <div class=" col-md-9">
+            <?php
+            echo form_input(array(
+                "id" => "artist-signoff",
+                "name" => "artist_signoff",
+                "value" => $model_info->artist_signoff ? $model_info->artist_signoff : "",
+                "class" => "form-control"
+            ));
+            ?>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="final-signoff" class=" col-md-3"><?php echo lang('final_signoff'); ?></label>
+        <div class=" col-md-9">
+            <?php
+            echo form_input(array(
+                "id" => "final-signoff",
+                "name" => "final_signoff",
+                "value" => $model_info->final_signoff ? $model_info->final_signoff : "",
+                "class" => "form-control"
+            ));
+            ?>
+        </div>
+    </div>
     <?php $this->load->view("custom_fields/form/prepare_context_fields", array("custom_fields" => $custom_fields, "label_column" => "col-md-3", "field_column" => " col-md-9")); ?> 
 
 </div>

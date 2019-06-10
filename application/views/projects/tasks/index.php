@@ -112,7 +112,9 @@
                     {visible: false, searchable: false},
                     {title: '<?php echo lang("assigned_to") ?>', "class": "min-w150"},
                     {title: '<?php echo lang("collaborators") ?>'},
-                    {title: '<?php echo lang("status") ?>'}
+                    {title: '<?php echo lang("status") ?>'},
+                    {title: '<?php echo lang("artist_signoff") ?>'},
+                    {title: '<?php echo lang("final_signoff") ?>'}, 
                     <?php echo $custom_field_headers; ?>,
                     {title: '<i class="fa fa-bars"></i>', visible: optionVisibility, "class": "text-center option w100"}
                 ],
