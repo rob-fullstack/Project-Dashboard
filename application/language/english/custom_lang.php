@@ -11,3 +11,5 @@ $lang['review_attachment'] = 'Attached Files';
 $lang['no_review'] = 'No review yet';
 $lang['project_id'] = 'Project ID';
 $lang['calendar'] = 'Calendar';
+$lang['artist_signoff'] = 'Artist Sign Off';
+$lang['final_signoff'] = 'Final Sign Off';

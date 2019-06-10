@@ -2357,7 +2357,6 @@ class Projects extends MY_Controller {
 
             $signoff = $this->Custom_field_values_model->get_one_where(array('related_to_type' => 'tasks', 'related_to_id' => $taskData->id, 'custom_field_id' => 5));
 
-            $task->artist_signoff = $signoff->value;
         }
 
         $this->load->view('projects/tasks/kanban/kanban_view', $view_data);
@@ -2396,7 +2395,6 @@ class Projects extends MY_Controller {
 
             $signoff = $this->Custom_field_values_model->get_one_where(array('related_to_type' => 'tasks', 'related_to_id' => $taskData->id, 'custom_field_id' => 5));
 
-            $task->artist_signoff = $signoff->value;
         }
 
         $this->load->view('projects/tasks/kanban/kanban_view', $view_data);
@@ -2629,7 +2627,9 @@ class Projects extends MY_Controller {
             "status_id" => $this->input->post('status_id'),
             "labels" => $this->input->post('labels'),
             "start_date" => $this->input->post('start_date'),
-            "deadline" => $this->input->post('deadline')
+            "deadline" => $this->input->post('deadline'),
+            "artist_signoff" => $this->input->post('artist_signoff'),
+            "final_signoff" => $this->input->post('final_signoff')
         );
 
 
@@ -2934,6 +2934,18 @@ class Projects extends MY_Controller {
             $options .= js_anchor("<i class='fa fa-times fa-fw'></i>", array('title' => lang('delete_task'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("projects/delete_task"), "data-action" => "delete"));
         }
 
+        $artist_signoff = "";
+        if($data->artist_signoff) {
+            $assignee = explode(' ', $data->assigned_to_user);
+            $artist_signoff = '<span class="label" style="background:'.$data->artist_signoff.';">'.substr($assignee[0], 0, 1).substr($assignee[1], 0, 1).'</span>';
+        }
+
+        $final_signoff = "";
+        if($data->final_signoff) {
+            $assignee = explode(' ', $data->assigned_to_user);
+            $final_signoff = '<span class="label" style="background:'.$data->final_signoff.';">'.substr($assignee[0], 0, 1).substr($assignee[1], 0, 1).'</span>';
+        }
+
         $row_data = array(
             $data->status_color,
             $check_status,
@@ -2945,7 +2957,9 @@ class Projects extends MY_Controller {
             $project_title,
             $assigned_to,
             $collaborators,
-            $status
+            $status,
+            $artist_signoff,
+            $final_signoff
         );
 
         foreach ($custom_fields as $field) {
