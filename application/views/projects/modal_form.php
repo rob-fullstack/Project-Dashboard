@@ -180,11 +180,14 @@
         $('#members').on("change", function(e) {
           const removed = e.removed;
           const updated = e.val.join(',');
+          var isEdit = <?php echo $model_info->unique_project_id ? 'true' : 'false' ?>;
           console.log(updated);
           $('input#members').val(updated);
-          $.post('<?php echo get_uri('projects/delete_project_member')?>', {"id": removed.table_id}, function(response){
+          if(isEdit) {
+            $.post('<?php echo get_uri('projects/delete_project_member')?>', {"id": removed.table_id}, function(response){
               //console.log(response);
-          });
+            });
+          } 
         });
 
         setDatePicker("#start_date, #deadline");

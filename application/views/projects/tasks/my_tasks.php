@@ -80,8 +80,10 @@ foreach ($task_statuses as $status) {
                 {title: '<?php echo lang("project") ?>'},
                 {title: '<?php echo lang("assigned_to") ?>', "class": "min-w150"},
                 {title: '<?php echo lang("collaborators") ?>'},
-                {title: '<?php echo lang("status") ?>'}
-<?php echo $custom_field_headers; ?>,
+                {title: '<?php echo lang("status") ?>'},
+                {title: '<?php echo lang("artist_signoff") ?>'},
+                {title: '<?php echo lang("final_signoff") ?>'}
+                <?php echo $custom_field_headers; ?>,
                 {visible: false, searchable: false}
             ],
             printColumns: combineCustomFieldsColumns([1, 2, 4, 6, 7, 8, 9, 10], '<?php echo $custom_field_headers; ?>'),

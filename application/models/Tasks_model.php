@@ -80,6 +80,14 @@ class Tasks_model extends Crud_model {
             "sort" => array(
                 "label" => lang("priority"),
                 "type" => "int"
+            ),
+            "artist_signoff" => array(
+                "label" => lang("artist_signoff"),
+                "type" => "varchar"
+            ),
+            "final_signoff" => array(
+                "label" => lang("final_signoff"),
+                "type" => "varchar"
             )
         );
     }
@@ -165,6 +173,7 @@ class Tasks_model extends Crud_model {
 
         $sql = "SELECT $tasks_table.*, $task_status_table.key_name AS status_key_name, $task_status_table.title AS status_title,  $task_status_table.color AS status_color, CONCAT($users_table.first_name, ' ',$users_table.last_name) AS assigned_to_user, $users_table.image as assigned_to_avatar, $projects.unique_project_id AS unique_project_id, 
                     $projects.title AS project_title, $milestones_table.title AS milestone_title, IF($tasks_table.deadline IS NULL, $milestones_table.due_date,$tasks_table.deadline) AS deadline,
+                    $tasks_table.artist_signoff AS artist_signoff, $tasks_table.final_signoff AS final_signoff, 
                     (SELECT GROUP_CONCAT($users_table.id, '--::--', $users_table.first_name, ' ', $users_table.last_name, '--::--' , IFNULL($users_table.image,'')) FROM $users_table WHERE FIND_IN_SET($users_table.id, $tasks_table.collaborators)) AS collaborator_list $select_custom_fieds  
         FROM $tasks_table
         LEFT JOIN $users_table ON $users_table.id= $tasks_table.assigned_to
@@ -253,7 +262,7 @@ class Tasks_model extends Crud_model {
         }
 
 
-        $sql = "SELECT $tasks_table.id, $tasks_table.title, $tasks_table.deadline, $tasks_table.sort, IF($tasks_table.sort!=0, $tasks_table.sort, $tasks_table.id) AS new_sort, $tasks_table.assigned_to, $tasks_table.labels, $tasks_table.status_id, $tasks_table.project_id, CONCAT($users_table.first_name, ' ',$users_table.last_name) AS assigned_to_user, $users_table.image as assigned_to_avatar
+        $sql = "SELECT $tasks_table.id, $tasks_table.title, $tasks_table.deadline, $tasks_table.sort, IF($tasks_table.sort!=0, $tasks_table.sort, $tasks_table.id) AS new_sort, $tasks_table.assigned_to, $tasks_table.labels, $tasks_table.status_id, $tasks_table.project_id, $tasks_table.artist_signoff, $tasks_table.final_signoff, CONCAT($users_table.first_name, ' ',$users_table.last_name) AS assigned_to_user, $users_table.image as assigned_to_avatar
         FROM $tasks_table
         LEFT JOIN $users_table ON $users_table.id= $tasks_table.assigned_to
         LEFT JOIN $projects ON $tasks_table.project_id=$projects.id 

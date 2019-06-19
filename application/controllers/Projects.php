@@ -505,6 +505,19 @@ class Projects extends MY_Controller {
                 $email = true;
             }
 
+            $member_ids = explode(",", $this->input->post("members"));
+
+            if (!empty($member_ids) && $member_ids !== null) {
+                 foreach ($member_ids as $member_id) {
+                     $member_data = array(
+                         "project_id" => $save_id,
+                         "user_id" => $member_id,
+                         "is_leader" => 0
+                     );
+                     $this->Project_members_model->save_member($member_data);
+                 }
+             }
+
             if ($id) {
 
                 if ($this->login_user->user_type === "staff") {
@@ -516,20 +529,6 @@ class Projects extends MY_Controller {
                         "is_leader" => 1
                     );
                     $this->Project_members_model->save_member($data);
-                }
-
-                $member_ids = explode(",", $this->input->post("members"));
-
-                if (!empty($member_ids) && $member_ids !== null) {
-                    foreach ($member_ids as $member_id) {
-                        $member_data = array(
-                            "project_id" => $save_id,
-                            "user_id" => $member_id,
-                            "is_leader" => 0
-                        );
-
-                        $this->Project_members_model->save_member($member_data);
-                    }
                 }
 
                 log_notification("project_created", array("project_id" => $save_id));
@@ -2358,7 +2357,6 @@ class Projects extends MY_Controller {
 
             $signoff = $this->Custom_field_values_model->get_one_where(array('related_to_type' => 'tasks', 'related_to_id' => $taskData->id, 'custom_field_id' => 5));
 
-            $task->artist_signoff = $signoff->value;
         }
 
         $this->load->view('projects/tasks/kanban/kanban_view', $view_data);
@@ -2397,7 +2395,6 @@ class Projects extends MY_Controller {
 
             $signoff = $this->Custom_field_values_model->get_one_where(array('related_to_type' => 'tasks', 'related_to_id' => $taskData->id, 'custom_field_id' => 5));
 
-            $task->artist_signoff = $signoff->value;
         }
 
         $this->load->view('projects/tasks/kanban/kanban_view', $view_data);
@@ -2630,7 +2627,9 @@ class Projects extends MY_Controller {
             "status_id" => $this->input->post('status_id'),
             "labels" => $this->input->post('labels'),
             "start_date" => $this->input->post('start_date'),
-            "deadline" => $this->input->post('deadline')
+            "deadline" => $this->input->post('deadline'),
+            "artist_signoff" => $this->input->post('artist_signoff'),
+            "final_signoff" => $this->input->post('final_signoff')
         );
 
 
@@ -2935,6 +2934,18 @@ class Projects extends MY_Controller {
             $options .= js_anchor("<i class='fa fa-times fa-fw'></i>", array('title' => lang('delete_task'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("projects/delete_task"), "data-action" => "delete"));
         }
 
+        $artist_signoff = "";
+        if($data->artist_signoff) {
+            $assignee = explode(' ', $data->assigned_to_user);
+            $artist_signoff = '<span class="label" style="background:'.$data->artist_signoff.';">'.substr($assignee[0], 0, 1).substr($assignee[1], 0, 1).'</span>';
+        }
+
+        $final_signoff = "";
+        if($data->final_signoff) {
+            $assignee = explode(' ', $data->assigned_to_user);
+            $final_signoff = '<span class="label" style="background:'.$data->final_signoff.';">'.substr($assignee[0], 0, 1).substr($assignee[1], 0, 1).'</span>';
+        }
+
         $row_data = array(
             $data->status_color,
             $check_status,
@@ -2946,7 +2957,9 @@ class Projects extends MY_Controller {
             $project_title,
             $assigned_to,
             $collaborators,
-            $status
+            $status,
+            $artist_signoff,
+            $final_signoff
         );
 
         foreach ($custom_fields as $field) {
