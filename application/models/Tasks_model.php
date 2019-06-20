@@ -88,6 +88,14 @@ class Tasks_model extends Crud_model {
             "final_signoff" => array(
                 "label" => lang("final_signoff"),
                 "type" => "varchar"
+            ),
+            "artist_signoff_color" => array(
+                "label" => lang("artist_signoff_color"),
+                "type" => "varchar"
+            ),
+            "final_signoff_color" => array(
+                "label" => lang("final_signoff_color"),
+                "type" => "varchar"
             )
         );
     }
@@ -171,17 +179,17 @@ class Tasks_model extends Crud_model {
 
 
 
-        $sql = "SELECT $tasks_table.*, $task_status_table.key_name AS status_key_name, $task_status_table.title AS status_title,  $task_status_table.color AS status_color, CONCAT($users_table.first_name, ' ',$users_table.last_name) AS assigned_to_user, $users_table.image as assigned_to_avatar, $projects.unique_project_id AS unique_project_id, 
+        $sql = "SELECT $tasks_table.*, $task_status_table.key_name AS status_key_name, $task_status_table.title AS status_title,  $task_status_table.color AS status_color, CONCAT($users_table.first_name, ' ',$users_table.last_name) AS assigned_to_user, $users_table.image as assigned_to_avatar, $projects.unique_project_id AS unique_project_id,
                     $projects.title AS project_title, $milestones_table.title AS milestone_title, IF($tasks_table.deadline IS NULL, $milestones_table.due_date,$tasks_table.deadline) AS deadline,
-                    $tasks_table.artist_signoff AS artist_signoff, $tasks_table.final_signoff AS final_signoff, 
-                    (SELECT GROUP_CONCAT($users_table.id, '--::--', $users_table.first_name, ' ', $users_table.last_name, '--::--' , IFNULL($users_table.image,'')) FROM $users_table WHERE FIND_IN_SET($users_table.id, $tasks_table.collaborators)) AS collaborator_list $select_custom_fieds  
+                    $tasks_table.artist_signoff AS artist_signoff, $tasks_table.final_signoff AS final_signoff, $tasks_table.artist_signoff_color AS artist_signoff_color, $tasks_table.final_signoff_color AS final_signoff_color,
+                    (SELECT GROUP_CONCAT($users_table.id, '--::--', $users_table.first_name, ' ', $users_table.last_name, '--::--' , IFNULL($users_table.image,'')) FROM $users_table WHERE FIND_IN_SET($users_table.id, $tasks_table.collaborators)) AS collaborator_list $select_custom_fieds
         FROM $tasks_table
         LEFT JOIN $users_table ON $users_table.id= $tasks_table.assigned_to
-        LEFT JOIN $projects ON $tasks_table.project_id=$projects.id 
-        LEFT JOIN $milestones_table ON $tasks_table.milestone_id=$milestones_table.id 
-        LEFT JOIN $task_status_table ON $tasks_table.status_id = $task_status_table.id 
-        $extra_left_join 
-        $join_custom_fieds    
+        LEFT JOIN $projects ON $tasks_table.project_id=$projects.id
+        LEFT JOIN $milestones_table ON $tasks_table.milestone_id=$milestones_table.id
+        LEFT JOIN $task_status_table ON $tasks_table.status_id = $task_status_table.id
+        $extra_left_join
+        $join_custom_fieds
         WHERE $tasks_table.deleted=0 $where";
 
         return $this->db->query($sql);
@@ -216,7 +224,7 @@ class Tasks_model extends Crud_model {
         if ($status) {
             $where .= " AND FIND_IN_SET($tasks_table.status,'$status')";
         }
-                
+
         $project_status = get_array_value($options, "project_status");
         if ($project_status) {
             $where .= " AND FIND_IN_SET($projects.status,'$project_status')";
@@ -262,13 +270,13 @@ class Tasks_model extends Crud_model {
         }
 
 
-        $sql = "SELECT $tasks_table.id, $tasks_table.title, $tasks_table.deadline, $tasks_table.sort, IF($tasks_table.sort!=0, $tasks_table.sort, $tasks_table.id) AS new_sort, $tasks_table.assigned_to, $tasks_table.labels, $tasks_table.status_id, $tasks_table.project_id, $tasks_table.artist_signoff, $tasks_table.final_signoff, CONCAT($users_table.first_name, ' ',$users_table.last_name) AS assigned_to_user, $users_table.image as assigned_to_avatar
+        $sql = "SELECT $tasks_table.id, $tasks_table.title, $tasks_table.deadline, $tasks_table.sort, IF($tasks_table.sort!=0, $tasks_table.sort, $tasks_table.id) AS new_sort, $tasks_table.assigned_to, $tasks_table.labels, $tasks_table.status_id, $tasks_table.project_id, $tasks_table.artist_signoff, $tasks_table.final_signoff, $tasks_table.artist_signoff_color, $tasks_table.final_signoff_color, CONCAT($users_table.first_name, ' ',$users_table.last_name) AS assigned_to_user, $users_table.image as assigned_to_avatar
         FROM $tasks_table
         LEFT JOIN $users_table ON $users_table.id= $tasks_table.assigned_to
-        LEFT JOIN $projects ON $tasks_table.project_id=$projects.id 
-        LEFT JOIN $milestones_table ON $tasks_table.milestone_id=$milestones_table.id 
-        $extra_left_join    
-        WHERE $tasks_table.deleted=0 $where 
+        LEFT JOIN $projects ON $tasks_table.project_id=$projects.id
+        LEFT JOIN $milestones_table ON $tasks_table.milestone_id=$milestones_table.id
+        $extra_left_join
+        WHERE $tasks_table.deleted=0 $where
         ORDER BY new_sort ASC";
 
         return $this->db->query($sql);
@@ -300,7 +308,7 @@ class Tasks_model extends Crud_model {
         $sql = "SELECT $project_members_table.project_id, $projects_table.title AS project_title
         FROM $project_members_table
         LEFT JOIN $projects_table ON $projects_table.id= $project_members_table.project_id
-        WHERE $project_members_table.deleted=0 $where 
+        WHERE $project_members_table.deleted=0 $where
         GROUP BY $project_members_table.project_id";
         return $this->db->query($sql);
     }
@@ -312,7 +320,7 @@ class Tasks_model extends Crud_model {
         try {
             $this->db->query("SET sql_mode = ''");
         } catch (Exception $e) {
-            
+
         }
         $where = "";
 
