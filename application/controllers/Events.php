@@ -410,6 +410,8 @@ class Events extends MY_Controller {
           $collaborator = false;
         }
 
+        $exploded_collaborators = array_merge(explode(',', $task->collaborators), array($task->assigned_to));
+  
         return array(
             'task' => $task,
             'title' => $project->unique_project_id . ' | ' . $task->title,
@@ -422,7 +424,8 @@ class Events extends MY_Controller {
             'avatar' => $image,
             'user_name' => $first_name,
             'event_type' => 'task',
-            'collaborator' => $collaborator
+            'collaborator' => $collaborator,
+            'collaborators' => implode(',', $exploded_collaborators)
         );
     }
 

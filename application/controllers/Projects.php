@@ -2629,7 +2629,9 @@ class Projects extends MY_Controller {
             "start_date" => $this->input->post('start_date'),
             "deadline" => $this->input->post('deadline'),
             "artist_signoff" => $this->input->post('artist_signoff'),
-            "final_signoff" => $this->input->post('final_signoff')
+            "final_signoff" => $this->input->post('final_signoff'),
+            "artist_signoff_color" => $this->input->post('artist_signoff_color'),
+            "final_signoff_color" => $this->input->post('final_signoff_color')
         );
 
 
@@ -2935,15 +2937,15 @@ class Projects extends MY_Controller {
         }
 
         $artist_signoff = "";
-        if($data->artist_signoff) {
+        if($data->artist_signoff_color) {
             $assignee = explode(' ', $data->assigned_to_user);
-            $artist_signoff = '<span class="label" style="background:'.$data->artist_signoff.';">'.substr($assignee[0], 0, 1).substr($assignee[1], 0, 1).'</span>';
+            $artist_signoff = '<span class="label" style="background:'.$data->artist_signoff_color.';">'.($data->artist_signoff ? $data->artist_signoff : substr($assignee[0], 0, 1).substr($assignee[1], 0, 1)).'</span>';
         }
 
         $final_signoff = "";
-        if($data->final_signoff) {
+        if($data->final_signoff_color) {
             $assignee = explode(' ', $data->assigned_to_user);
-            $final_signoff = '<span class="label" style="background:'.$data->final_signoff.';">'.substr($assignee[0], 0, 1).substr($assignee[1], 0, 1).'</span>';
+            $final_signoff = '<span class="label" style="background:'.$data->final_signoff_color.';">'.($data->final_signoff ? $data->final_signoff : substr($assignee[0], 0, 1).substr($assignee[1], 0, 1)).'</span>';
         }
 
         $row_data = array(
@@ -4066,6 +4068,11 @@ class Projects extends MY_Controller {
         $total_hours = $total_hours + $total_minutes + $total_seconds;
 
         return round($total_hours, 2);
+    }
+
+    function weekly_view(){
+      $view_data = array();
+      $this->template->rander('projects/week_view', $view_data);
     }
 
 }
