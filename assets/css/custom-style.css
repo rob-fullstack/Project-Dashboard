@@ -167,3 +167,6 @@ div.ganttview-block-text a { display: none; }
 .navbar-default .navbar-nav>li>a.btn-danger:active {
 	color: #4e5e6a !important;
 }
+.weekly .title-button-group {
+	padding: 10px 15px;
+}

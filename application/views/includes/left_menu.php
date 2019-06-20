@@ -25,6 +25,9 @@
                 $manage_help_and_knowledge_base = ($this->login_user->is_admin || get_array_value($permissions, "help_and_knowledge_base"));
                 $manage_timesheets = ($this->login_user->is_admin || get_array_value($permissions, "timesheet_manage_permission"));
 
+                if($this->login_user->is_admin || $this->login_user->role_id == 6){
+                    $sidebar_menu[] = array("name" => "this week", "url" => "weekly", "class" => "fa-calendar");
+                }
 
                 if (get_setting("module_timeline") == "1") {
                     $sidebar_menu[] = array("name" => "timeline", "url" => "timeline", "class" => " fa-comments font-18");
@@ -118,7 +121,7 @@
                         $ticket_badge = count_new_tickets($specific_ticket_permission);
                     }
 
-                    // 
+                    //
 
                     $sidebar_menu[] = array("name" => "tickets", "url" => "tickets", "class" => "fa-life-ring", "devider" => true, "badge" => $ticket_badge, "badge_class" => "badge-secondary");
                 }
@@ -191,6 +194,8 @@
                 if ($this->login_user->is_admin) {
                     $sidebar_menu[] = array("name" => "settings", "url" => "settings/general", "class" => "fa-wrench");
                 }
+
+
             } else {
                 //client menu
                 //get the array of hidden menu
