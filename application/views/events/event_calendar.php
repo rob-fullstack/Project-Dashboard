@@ -69,7 +69,7 @@ if (isset($client_id)) {
 
         var $userSelect  = $('#user_filter');
         var $teamSelect  = $('#team_filter');
-        var $colabSelect  = $('#colab_filter'); 
+        var $colabSelect  = $('#colab_filter');
         var $eventCalendar = $('#event-calendar');
 
         $userSelect.select2();
@@ -85,7 +85,7 @@ if (isset($client_id)) {
                 center: 'title',
                 right: 'month,agendaWeek,agendaDay'
             },
-            events: "<?php echo_uri("events/calendar_events/" . $client); ?>", 
+            events: "<?php echo_uri("events/calendar_events/" . $client); ?>",
             dayClick: function (date, jsEvent, view) {
                 $("#add_event_hidden").attr("data-post-start_date", date.format("YYYY-MM-DD"));
                 var startTime = date.format("HH:mm:ss");
@@ -133,8 +133,8 @@ if (isset($client_id)) {
                     var splits = text.split(' | ');
                     return splits[0] + ' | <strong>' + splits[1] + '</strong>';
                 });
-                 
-                if (event.event_type === 'task') {                    
+
+                if (event.event_type === 'task') {
                     element.addClass('event-task');
                 }
                 if (event.collaborator) {
@@ -144,20 +144,20 @@ if (isset($client_id)) {
                     element.find(".fc-title").prepend("<i class='fa " + event.icon + "'></i> ");
                 }
                 if (event.avatar) {
-                    element.find(".fc-content").append('<img class="img-circle event-task-assignee" src="/files/profile_images//' + event.avatar + '" alt="User Avatar" title="' + event.user_name + '">')
+                    element.find(".fc-content").append('<img class="img-circle event-task-assignee" src="<?php echo base_url();?>/files/profile_images/' + event.avatar + '" alt="User Avatar" title="' + event.user_name + '">')
                 } else {
-                    element.find(".fc-content").append('<img class="img-circle event-task-assignee" src="/assets/images/avatar.jpg" alt="User Avatar" title="' + event.user_name + '">')
+                    element.find(".fc-content").append('<img class="img-circle event-task-assignee" src="<?php echo base_url();?>/assets/images/avatar.jpg" alt="User Avatar" title="' + event.user_name + '">')
                 }
 
                 if ($colabSelect.length) {
                     if($colabSelect.val() !== 'all'){
                         $userSelect.prop('disabled', true);
-                        var taskCollaborators = event.task.collaborators.split(',')                    
+                        var taskCollaborators = event.task.collaborators.split(',')
                         return taskCollaborators.indexOf($colabSelect.val()) >= 0;
 
                     }else{
                         $userSelect.prop('disabled', false);
-                    }      
+                    }
                 }
 
                 if ($teamSelect.length) {
@@ -174,7 +174,7 @@ if (isset($client_id)) {
 
                 if ($userSelect.length) {
                    return ['all', event.assigned_to].indexOf($userSelect.val()) >= 0;
-                } 
+                }
             },
             eventDrop: function (event) {
                 if (event.event_type === 'task') {
@@ -301,5 +301,5 @@ if (isset($client_id)) {
                 </ul>
             </div>
         </div>
-    </div>  
+    </div>
 </div>
