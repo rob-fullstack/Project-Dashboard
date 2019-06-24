@@ -25,14 +25,6 @@ if (isset($client_id)) {
             <?php } ?>
             <div class="title-button-group">
                 <?php if ($can_filter) { ?>
-                    <select class="colab_filter" name="colab_filter" id="colab_filter">
-                        <option value="all" selected>Filter collaborators</option>
-                        <?php foreach ($users as $user) { ?>
-                            <option value="<?php echo $user->id ?>"><?php echo $user->first_name . ' ' . $user->last_name ?></option>
-                        <?php } ?>
-                    </select>
-                <?php } ?>
-                <?php if ($can_filter) { ?>
                     <select class="user_filter" name="user_filter" id="user_filter">
                         <option value="all" selected>Filter all users</option>
                         <?php foreach ($users as $user) { ?>
@@ -77,13 +69,11 @@ if (isset($client_id)) {
 
         var $userSelect  = $('#user_filter');
         var $teamSelect  = $('#team_filter');
-        var $colabSelect  = $('#colab_filter'); 
-        var $milesSelect  = $('#miles_filter'); 
+        var $milesSelect  = $('#miles_filter');
         var $eventCalendar = $('#event-calendar');
 
         $userSelect.select2();
         $teamSelect.select2();
-        $colabSelect.select2();
         $milesSelect.select2();
 
         $eventCalendar.fullCalendar({
@@ -95,7 +85,7 @@ if (isset($client_id)) {
                 center: 'title',
                 right: 'month,agendaWeek,agendaDay'
             },
-            events: "<?php echo_uri("events/calendar_events/" . $client); ?>", 
+            events: "<?php echo_uri("events/calendar_events/" . $client); ?>",
             dayClick: function (date, jsEvent, view) {
                 $("#add_event_hidden").attr("data-post-start_date", date.format("YYYY-MM-DD"));
                 var startTime = date.format("HH:mm:ss");
@@ -143,8 +133,8 @@ if (isset($client_id)) {
                     var splits = text.split(' | ');
                     return splits[0] + ' | <strong>' + splits[1] + '</strong>';
                 });
-                 
-                if (event.event_type === 'task') {                    
+
+                if (event.event_type === 'task') {
                     element.addClass('event-task');
                 }
                 if (event.collaborator) {
@@ -154,29 +144,26 @@ if (isset($client_id)) {
                     element.find(".fc-title").prepend("<i class='fa " + event.icon + "'></i> ");
                 }
                 if (event.avatar) {
-                    element.find(".fc-content").append('<img class="img-circle event-task-assignee" src="/files/profile_images//' + event.avatar + '" alt="User Avatar" title="' + event.user_name + '">')
+                    element.find(".fc-content").append('<img class="img-circle event-task-assignee" src="<?php echo base_url();?>/files/profile_images//' + event.avatar + '" alt="User Avatar" title="' + event.user_name + '">')
                 } else {
-                    element.find(".fc-content").append('<img class="img-circle event-task-assignee" src="/assets/images/avatar.jpg" alt="User Avatar" title="' + event.user_name + '">')
+                    element.find(".fc-content").append('<img class="img-circle event-task-assignee" src="<?php echo base_url();?>/assets/images/avatar.jpg" alt="User Avatar" title="' + event.user_name + '">')
                 }
 
                 if ($milesSelect.length) {
                     if($milesSelect.val() !== 'all'){
-                        $colabSelect.prop('disabled', true);
                         $userSelect.prop('disabled', true);
                         $teamSelect.prop('disabled', true);
                         return ['all', event.task.milestone_id].indexOf($milesSelect.val()) >= 0;
                     }else{
-                        $colabSelect.prop('disabled', false);
                         $userSelect.prop('disabled', false);
                         $teamSelect.prop('disabled', false);
-                    }      
+                    }
                 }
 
                 if ($teamSelect.length) {
                     if ($teamSelect.val() !== 'all') {
                         $userSelect.prop('disabled', true);
                         $milesSelect.prop('disabled', true);
-                        $colabSelect.prop('disabled', true);
                         var members = $teamSelect.val().split(',');
                         return members.some(function (v) {
                             return ['all', event.assigned_to].indexOf(v) >= 0;
@@ -184,7 +171,6 @@ if (isset($client_id)) {
                     } else {
                         $userSelect.prop('disabled', false);
                         $milesSelect.prop('disabled', false);
-                        $colabSelect.prop('disabled', false);
                     }
                 }
 
@@ -192,30 +178,13 @@ if (isset($client_id)) {
                     if ($userSelect.val() !== 'all') {
                         $teamSelect.prop('disabled', true);
                         $milesSelect.prop('disabled', true);
-                        $colabSelect.prop('disabled', true);
-                        return ['all', event.assigned_to].indexOf($userSelect.val()) >= 0;
+                        var taskCollaborators = event.collaborators.split(',');
+                        return taskCollaborators.indexOf($userSelect.val()) >= 0;
                     } else {
                         $teamSelect.prop('disabled', false);
                         $milesSelect.prop('disabled', false);
-                        $colabSelect.prop('disabled', false);
                     }
-                } 
-
-                if ($colabSelect.length) {
-                    if($colabSelect.val() !== 'all'){
-                        $userSelect.prop('disabled', true);
-                        $milesSelect.prop('disabled', true);
-                        $teamSelect.prop('disabled', true);
-                        var taskCollaborators = event.task.collaborators.split(',')                    
-                        return taskCollaborators.indexOf($colabSelect.val()) >= 0;
-                    }else{
-                        $userSelect.prop('disabled', false);
-                        $milesSelect.prop('disabled', false);
-                        $teamSelect.prop('disabled', false);
-                    }      
                 }
-
-
             },
             eventDrop: function (event) {
                 if (event.event_type === 'task') {
@@ -303,10 +272,6 @@ if (isset($client_id)) {
         })
 
         $teamSelect.on('change',function(){
-            $eventCalendar.fullCalendar('rerenderEvents');
-        })
-
-        $colabSelect.on('change',function(){
             $eventCalendar.fullCalendar('rerenderEvents');
         })
 
