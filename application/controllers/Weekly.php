@@ -12,8 +12,8 @@ class Weekly extends MY_Controller {
         parent::__construct();
         $this->load->helper("url");
         $this->load->model("Project_settings_model");
-        $this->load->model("Checklist_items_model");
-        $this->load->model("Reviews_model");
+        $this->load->model("Projects_model");
+        $this->load->model("Tasks_model");
     }
 
     private function can_manage_all_projects() {
@@ -324,7 +324,7 @@ class Weekly extends MY_Controller {
 
     /* load weekly project view */
 
-    function index(){
+    function index() {
       $teams = [];
       $groups = $this->Team_model->get_all()->result();
 
@@ -345,5 +345,25 @@ class Weekly extends MY_Controller {
       $view_data['teams'] = $teams;
       $view_data['can_filter'] = $this->is_superadmin();
       $this->template->rander('weekly/index',$view_data);
+    }
+
+    function get_week_kanban() {
+      $range = date('Y-m-d', strtotime('+2 weeks'));
+
+      $data = array(
+        'range' => $range,
+        'deleted' => 0,
+        'status' => 'open'
+      );
+
+      $projects = $this->Projects_model->get_details($data)->result();
+
+      $project_tasks = array();
+
+      foreach ($projects as $key => $project) {
+        $project_tasks[] = $this->Tasks_model->get_details(array('project_id'=>$project->id, 'range'=> $range))->result();
+      }
+
+      echo json_encode(array('data'=>array_filter($project_tasks)));
     }
 }

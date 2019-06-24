@@ -161,6 +161,12 @@ class Tasks_model extends Crud_model {
             }
         }
 
+        $range = get_array_value($options, "range");
+        if ($range) {
+          $now = get_my_local_time("Y-m-d");
+          $where .= " AND $tasks_table.deadline >= '$now' AND $tasks_table.deadline <= '$range'";
+        }
+
 
         $extra_left_join = "";
         $project_member_id = get_array_value($options, "project_member_id");

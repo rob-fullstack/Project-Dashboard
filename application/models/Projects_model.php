@@ -6,7 +6,7 @@ class Projects_model extends Crud_model {
 
     function __construct() {
         $this->table = 'projects';
-        parent::__construct($this->table); 
+        parent::__construct($this->table);
     }
 
     function get_details($options = array()) {
@@ -30,7 +30,7 @@ class Projects_model extends Crud_model {
         if ($status) {
             $where .= " AND $projects_table.status='$status'";
         }
-        
+
         $statuses = get_array_value($options, "statuses");
         if ($statuses) {
             $where .= " AND (FIND_IN_SET($projects_table.status, '$statuses')) ";
@@ -41,8 +41,7 @@ class Projects_model extends Crud_model {
         if ($project_label) {
             $where .= " AND (FIND_IN_SET('$project_label', $projects_table.labels)) ";
         }
-        
-        
+
         $deadline = get_array_value($options, "deadline");
         if ($deadline) {
             $now = get_my_local_time("Y-m-d");
@@ -52,7 +51,12 @@ class Projects_model extends Crud_model {
                 $where .= " AND ($projects_table.deadline IS NOT NULL AND $projects_table.deadline<='$deadline')";
             }
         }
-        
+
+        $range = get_array_value($options, "range");
+        if ($range) {
+          $now = get_my_local_time("Y-m-d");
+          $where .= " AND $projects_table.deadline >= '$now' AND $projects_table.deadline <= '$range'";
+        }
 
         $extra_join = "";
         $extra_where = "";
@@ -64,7 +68,7 @@ class Projects_model extends Crud_model {
         }
 
 
-               
+
         //prepare custom fild binding query
         $custom_fields = get_array_value($options, "custom_fields");
         $custom_field_query_info = $this->prepare_custom_field_query_string("projects", $custom_fields, $projects_table);
@@ -72,14 +76,14 @@ class Projects_model extends Crud_model {
         $join_custom_fieds = get_array_value($custom_field_query_info, "join_string");
 
         $this->db->query('SET SQL_BIG_SELECTS=1');
-        
+
         $sql = "SELECT $projects_table.*, $clients_table.company_name, $clients_table.currency_symbol,  total_points_table.total_points, completed_points_table.completed_points $select_custom_fieds
         FROM $projects_table
         LEFT JOIN $clients_table ON $clients_table.id= $projects_table.client_id
         LEFT JOIN (SELECT project_id, SUM(points) AS total_points FROM $tasks_table WHERE deleted=0 GROUP BY project_id) AS  total_points_table ON total_points_table.project_id= $projects_table.id
         LEFT JOIN (SELECT project_id, SUM(points) AS completed_points FROM $tasks_table WHERE deleted=0 AND status_id=3 GROUP BY project_id) AS  completed_points_table ON completed_points_table.project_id= $projects_table.id
-        $extra_join   
-        $join_custom_fieds    
+        $extra_join
+        $join_custom_fieds
         WHERE $projects_table.deleted=0 $where $extra_where
         ORDER BY $projects_table.start_date DESC";
         return $this->db->query($sql);
@@ -107,7 +111,7 @@ class Projects_model extends Crud_model {
 
         $sql = "SELECT $projects_table.status, COUNT($projects_table.id) as total
         FROM $projects_table
-              $extra_join    
+              $extra_join
         WHERE $projects_table.deleted=0 AND ($projects_table.status='open' OR  $projects_table.status='completed') $extra_where
         GROUP BY $projects_table.status";
         $result = $this->db->query($sql)->result();
@@ -139,13 +143,13 @@ class Projects_model extends Crud_model {
         if ($assigned_to) {
             $where .= " AND $tasks_table.assigned_to=$assigned_to";
         }
-        
+
         $status_id = get_array_value($options, "status_id");
         if ($status_id) {
             $where .= " AND $tasks_table.status_id=$status_id";
         }
 
-        $sql = "SELECT $tasks_table.id AS task_id, $tasks_table.title AS task_title, $tasks_table.status_id, $tasks_table.start_date, $tasks_table.deadline AS end_date, 
+        $sql = "SELECT $tasks_table.id AS task_id, $tasks_table.title AS task_title, $tasks_table.status_id, $tasks_table.start_date, $tasks_table.deadline AS end_date,
              $milestones_table.id AS milestone_id, $milestones_table.title AS milestone_title, $milestones_table.due_date AS milestone_due_date, $tasks_table.assigned_to, CONCAT($users_table.first_name, ' ', $users_table.last_name ) AS assigned_to_name,
              $task_status_table.title AS status_title, $task_status_table.color AS status_color
                 FROM $tasks_table
@@ -192,11 +196,11 @@ class Projects_model extends Crud_model {
         $activity_logs_table = $this->db->dbprefix('activity_logs');
         $notifications_table = $this->db->dbprefix('notifications');
 
-        //get project files info to delete the files from directory 
+        //get project files info to delete the files from directory
         $project_files_sql = "SELECT * FROM $project_files_table WHERE $project_files_table.deleted=0 AND $project_files_table.project_id=$project_id; ";
         $project_files = $this->db->query($project_files_sql)->result();
 
-        //get project comments info to delete the files from directory 
+        //get project comments info to delete the files from directory
         $project_comments_sql = "SELECT * FROM $project_comments_table WHERE $project_comments_table.deleted=0 AND $project_comments_table.project_id=$project_id; ";
         $project_comments = $this->db->query($project_comments_sql)->result();
 
