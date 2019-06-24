@@ -19,12 +19,12 @@
                 }
             }
 
-            if (isset($task->artist_signoff) && !empty($task->artist_signoff)) {
-                $task_labels .= "<span class='label' style='background:".$task->artist_signoff."'>" . lang('artist_signoff') . "</span> ";
-            } 
+            if (isset($task->artist_signoff_color) && !empty($task->artist_signoff_color)) {
+                $task_labels .= "<span class='label' style='background:".$task->artist_signoff_color."'>" . ($task->artist_signoff ? $task->artist_signoff : lang('artist_signoff') ). "</span> ";
+            }
 
-            if (isset($task->final_signoff) && !empty($task->final_signoff)) {
-                $task_labels .= "<span class='label' style='background:".$task->final_signoff."'>" . lang('final_signoff') . "</span> ";
+            if (isset($task->final_signoff_color) && !empty($task->final_signoff_color)) {
+                $task_labels .= "<span class='label' style='background:".$task->final_signoff_color."'>" . ($task->final_signoff ? $task->final_signoff : lang('final_signoff') ). "</span> ";
             }
 
             if ( isset($task->deadline) ) {
@@ -35,7 +35,7 @@
                 $task_labels = "<div class='meta'>$task_labels</div>";
             }
 
-            $item = $exising_items .  modal_anchor(get_uri("projects/task_view"), 
+            $item = $exising_items .  modal_anchor(get_uri("projects/task_view"),
                         "<span class='avatar'>" .
                         "<img src='" . get_avatar($task->assigned_to_avatar) . "'>" .
                         "</span>" . $task->id . ". " . $task->title .
@@ -74,7 +74,7 @@
     </div>
 
     <img id="move-icon" class="hide" src="<?php echo get_file_uri("assets/images/move.png"); ?>" alt="..." />
-    
+
 <script type="text/javascript">
 
 
@@ -88,9 +88,9 @@
         }
 
 
-        //set column scroll 
+        //set column scroll
         $(".kanban-item-list").height($(window).height() - $(".kanban-item-list").offset().top-30);
-    
+
         $(".kanban-item-list").each(function (index) {
 
             //set scrollbar on column... if requred
