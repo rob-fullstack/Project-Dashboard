@@ -13,3 +13,4 @@ $lang['project_id'] = 'Project ID';
 $lang['calendar'] = 'Calendar';
 $lang['artist_signoff'] = 'Artist Sign Off';
 $lang['final_signoff'] = 'Final Sign Off';
+$lang['project_weekly'] = 'Projects This Week';

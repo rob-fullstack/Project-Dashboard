@@ -170,3 +170,8 @@ div.ganttview-block-text a { display: none; }
 .weekly .title-button-group {
 	padding: 10px 15px;
 }
+.weekly-avatar.avatar img{
+	position: absolute;
+	max-width: 50px;
+	padding: 5px;
+}

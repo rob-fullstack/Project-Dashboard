@@ -6,12 +6,13 @@
     <?php
     //We'll merge all css and js into sigle files. If you want to use the css separately, you can use it.
     /*
-    
+
     $css = array(
         "assets/js/datatable/TableTools/css/dataTables.tableTools.min.css",
         "assets/js/datatable/responsive.dataTables.min.css",
         "assets/js/bootstrap-datepicker/css/datepicker3.css",
         "assets/js/bootstrap-timepicker/css/bootstrap-timepicker.min.css",
+        "assets/bootstrap/css/bootstrap-colorpicker.min.css",
         "assets/js/x-editable/css/bootstrap-editable.css",
         "assets/js/dropzone/dropzone.min.css",
         "assets/js/magnific-popup/magnific-popup.css",
@@ -19,14 +20,17 @@
         "assets/js/awesomplete/awesomplete.css",
         "assets/js/atwho/css/jquery.atwho.min.css",
         "assets/css/font.css",
-        "assets/css/style.css"
+        "assets/css/style.css",
+        "assets/bootstrap/css/bootstrap-colorpicker.min.css",
     );
 
     $js = array(
         "assets/js/jquery-1.11.3.min.js",
         "assets/bootstrap/js/bootstrap.min.js",
+        "assets/bootstrap/js/bootstrap-colorpicker.min.js",
         "assets/js/jquery-validation/jquery.validate.min.js",
         "assets/js/jquery-validation/jquery.form.js",
+        "assets/js/progressbar/progressbar.min.js",
         "assets/js/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js",
         "assets/js/select2/select2.js",
         "assets/js/datatable/js/jquery.dataTables.min.js",
@@ -67,8 +71,9 @@
     */
 
 
+
     load_css(array(
-        "assets/bootstrap/css/bootstrap.min.css",
+      "assets/bootstrap/css/bootstrap.min.css",
         "assets/js/font-awesome/css/font-awesome.min.css", //don't combine this css because of the fonts path
         "assets/js/datatable/css/jquery.dataTables.min.css", //don't combine this css because of the images path
         "assets/js/select2/select2.css", //don't combine this css because of the images path
@@ -78,7 +83,7 @@
     ));
 
     load_js(array(
-        "assets/js/app.all.js"
+      "assets/js/app.all.js"
     ));
     ?>
 </head>
