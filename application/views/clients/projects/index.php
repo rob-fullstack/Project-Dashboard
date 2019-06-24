@@ -32,7 +32,7 @@
         <?php } ?>
 
         <div class="table-responsive">
-            <table id="project-table" class="display" width="100%">            
+            <table id="project-table" class="display" width="100%">
             </table>
         </div>
     </div>
@@ -93,7 +93,7 @@ if (isset($page_type) && $page_type === 'dashboard') {
                 {title: '<?php echo lang("status") ?>', "class": "w10p"}
                 <?php echo $custom_field_headers; ?>,
                 {visible: false, searchable: false},
-                {title: 'Time Spent', "class": "w10p"}
+                {title: 'Time Spent', "class": "w10p", defaultContent: "00:00:00"}
             ],
             printColumns:  combineCustomFieldsColumns([0, 1, 3, 5, 7, 9], '<?php echo $custom_field_headers; ?>'),
             xlsColumns:  combineCustomFieldsColumns([0, 1, 3, 5, 7, 9], '<?php echo $custom_field_headers; ?>')
