@@ -175,3 +175,17 @@ div.ganttview-block-text a { display: none; }
 	max-width: 50px;
 	padding: 5px;
 }
+
+#weekly-kanban ul, #weekly-board ul {
+	list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#weekly-grid li .kanban-col-title {
+	margin: 0;
+}
+
+#project-grid .kanban-item {
+	width: 100%;
+}
