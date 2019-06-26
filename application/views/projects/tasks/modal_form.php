@@ -165,17 +165,7 @@
     </div>
     <div class="form-group">
         <label for="artist-signoff" class=" col-md-3"><?php echo lang('artist_signoff'); ?></label>
-        <div class=" col-md-2">
-            <?php
-            echo form_input(array(
-                "id" => "artist-signoff-color",
-                "name" => "artist_signoff_color",
-                "value" => $model_info->artist_signoff_color ? $model_info->artist_signoff_color : "",
-                "class" => "form-control"
-            ));
-            ?>
-        </div>
-        <div class=" col-md-7">
+        <div class=" col-md-9">
             <?php
             echo form_input(array(
                 "id" => "artist-signoff",
@@ -188,17 +178,7 @@
     </div>
     <div class="form-group">
         <label for="final-signoff" class=" col-md-3"><?php echo lang('final_signoff'); ?></label>
-        <div class=" col-md-2">
-            <?php
-            echo form_input(array(
-                "id" => "final-signoff-color",
-                "name" => "final_signoff_color",
-                "value" => $model_info->final_signoff_color ? $model_info->final_signoff_color : "",
-                "class" => "form-control"
-            ));
-            ?>
-        </div>
-        <div class=" col-md-7">
+        <div class=" col-md-9">
             <?php
             echo form_input(array(
                 "id" => "final-signoff",
@@ -230,8 +210,6 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-      $('#artist-signoff-color').colorpicker();
-      $('#final-signoff-color').colorpicker();
         $('#custom_field_5').attr('minlength', 2);
 
         //send data to show the task after save
