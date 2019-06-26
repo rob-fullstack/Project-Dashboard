@@ -22,6 +22,7 @@
         "assets/css/font.css",
         "assets/css/style.css",
         "assets/bootstrap/css/bootstrap-colorpicker.min.css",
+        "assets/js/gridster/jquery.dsmorse-gridster.min.css",
     );
 
     $js = array(
@@ -54,6 +55,7 @@
         "assets/js/flot/curvedLines.js",
         "assets/js/flot/jquery.flot.tooltip.min.js",
         "assets/js/easypiechart/jquery.easypiechart.min.js",
+        "assets/js/gridster/jquery.dsmorse-gridster.min.js",
         "assets/js/atwho/caret/jquery.caret.min.js",
         "assets/js/atwho/js/jquery.atwho.min.js",
         "assets/js/notification_handler.js",
@@ -69,7 +71,6 @@
     write_js($js);
 
     */
-
 
 
     load_css(array(
