@@ -41,7 +41,7 @@ class Users_model extends Crud_model {
                 );
 
             $this->session->set_userdata($timer_session);
-            
+
             }
 
             $this->session->set_userdata('user_id', $user_info->id);
@@ -109,11 +109,11 @@ class Users_model extends Crud_model {
             $team_member_job_info_table.date_of_hire, $team_member_job_info_table.salary, $team_member_job_info_table.salary_term $select_custom_fieds
         FROM $users_table
         LEFT JOIN $team_member_job_info_table ON $team_member_job_info_table.user_id=$users_table.id
-        $join_custom_fieds    
+        $join_custom_fieds
         WHERE $users_table.deleted=0 $where
         ORDER BY $users_table.first_name";
         return $this->db->query($sql);
-    } 
+    }
 
     function is_email_exists($email, $id = 0) {
         $result = $this->get_all_where(array("email" => $email, "deleted" => 0));
@@ -170,7 +170,7 @@ class Users_model extends Crud_model {
         $team_table = $this->db->dbprefix('team');
 
         $sql = "SELECT $users_table.id, $users_table.user_type, $users_table.is_admin, $users_table.role_id, $users_table.email,
-            $users_table.first_name, $users_table.last_name, $users_table.image, $users_table.message_checked_at, $users_table.notification_checked_at, $users_table.client_id, 
+            $users_table.first_name, $users_table.last_name, $users_table.image, $users_table.message_checked_at, $users_table.notification_checked_at, $users_table.client_id,
             $users_table.is_primary_contact, $users_table.sticky_note,
             $roles_table.title as role_title, $roles_table.permissions,
             (SELECT GROUP_CONCAT(id) team_ids FROM $team_table WHERE FIND_IN_SET('$user_id', `members`)) as team_ids
@@ -219,14 +219,14 @@ class Users_model extends Crud_model {
         return $this->db->query($sql)->row();
     }
 
-    
+
     /* return list of ids of the online users */
 
     function get_online_user_ids() {
         $users_table = $this->db->dbprefix('users');
         $now = get_current_utc_time();
 
-        $sql = "SELECT $users_table.id 
+        $sql = "SELECT $users_table.id
         FROM $users_table
         WHERE TIMESTAMPDIFF(MINUTE, users.last_online, '$now')<=0";
         return $this->db->query($sql)->result();

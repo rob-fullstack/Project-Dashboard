@@ -2908,8 +2908,6 @@ class Projects extends MY_Controller {
             $status = $data->status_key_name ? lang($data->status_key_name) : $data->status_title;
         }
 
-
-
         $deadline_text = "-";
         if ($data->deadline) {
             $deadline_text = format_to_date($data->deadline, false);
@@ -2937,15 +2935,17 @@ class Projects extends MY_Controller {
         }
 
         $artist_signoff = "";
-        if($data->artist_signoff_color) {
-            $assignee = explode(' ', $data->assigned_to_user);
-            $artist_signoff = '<span class="label" style="background:'.$data->artist_signoff_color.';">'.($data->artist_signoff ? $data->artist_signoff : substr($assignee[0], 0, 1).substr($assignee[1], 0, 1)).'</span>';
+        if (in_array($data->status_id, array(3, 5, 6))) {
+            if (isset($data->artist_signoff) && !empty($data->artist_signoff)) {
+                $artist_signoff = "<span class='label label-success'>" . $data->artist_signoff . "</span> ";
+            }
         }
 
         $final_signoff = "";
-        if($data->final_signoff_color) {
-            $assignee = explode(' ', $data->assigned_to_user);
-            $final_signoff = '<span class="label" style="background:'.$data->final_signoff_color.';">'.($data->final_signoff ? $data->final_signoff : substr($assignee[0], 0, 1).substr($assignee[1], 0, 1)).'</span>';
+        if (in_array($data->status_id, array(3, 6))) {
+            if (isset($data->final_signoff) && !empty($data->final_signoff)) {
+                $final_signoff = "<span class='label label-success'>" . $data->final_signoff . "</span> ";
+            }
         }
 
         $row_data = array(

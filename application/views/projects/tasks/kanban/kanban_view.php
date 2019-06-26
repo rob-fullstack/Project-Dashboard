@@ -19,12 +19,20 @@
                 }
             }
 
-            if (isset($task->artist_signoff_color) && !empty($task->artist_signoff_color)) {
-                $task_labels .= "<span class='label' style='background:".$task->artist_signoff_color."'>" . ($task->artist_signoff ? $task->artist_signoff : lang('artist_signoff') ). "</span> ";
+            if (in_array($task->status_id, array(3, 5, 6))) {
+                if (isset($task->artist_signoff) && !empty($task->artist_signoff)) {
+                    $task_labels .= "<span class='label label-success'>" . $task->artist_signoff . "</span> ";
+                } else {
+                    $task_labels .= "<span class='label label-danger'>Artist Sign Off</span> ";
+                }
             }
 
-            if (isset($task->final_signoff_color) && !empty($task->final_signoff_color)) {
-                $task_labels .= "<span class='label' style='background:".$task->final_signoff_color."'>" . ($task->final_signoff ? $task->final_signoff : lang('final_signoff') ). "</span> ";
+            if (in_array($task->status_id, array(3, 6))) {
+                if (isset($task->final_signoff) && !empty($task->final_signoff)) {
+                    $task_labels .= "<span class='label label-success'>" . $task->final_signoff . "</span> ";
+                } else {
+                    $task_labels .= "<span class='label label-danger'>Final Sign Off</span> ";
+                }
             }
 
             if ( isset($task->deadline) ) {
