@@ -14,3 +14,5 @@ $lang['calendar'] = 'Calendar';
 $lang['artist_signoff'] = 'Artist Sign Off';
 $lang['final_signoff'] = 'Final Sign Off';
 $lang['project_weekly'] = 'Projects This Week';
+$lang['import'] = 'Import';
+$lang['import_success'] = 'Import successful';

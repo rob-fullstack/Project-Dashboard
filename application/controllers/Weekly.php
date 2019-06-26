@@ -14,6 +14,10 @@ class Weekly extends MY_Controller {
         $this->load->model("Project_settings_model");
         $this->load->model("Projects_model");
         $this->load->model("Tasks_model");
+        $this->load->model("Milestones_model");
+        $this->load->model("Custom_fields_model");
+        $this->load->model("Custom_field_values_model");
+        $this->load->model("Weekly_model");
     }
 
     private function can_manage_all_projects() {
@@ -340,30 +344,124 @@ class Weekly extends MY_Controller {
           }
       }
 
+      $users = $this->Users_model->get_all_where(array('user_type' => 'staff', 'deleted' => 0))->result();
+
+      $team_members = array();
+
+      foreach ($users as $key => $user) {
+        $team_members[] = array(
+          'id' => $user->id,
+          'full_name' => $user->first_name.' '.$user->last_name,
+          'image' => $user->image,
+          'hours' => $this->_calculate_hours($user->id)
+        );
+
+      }
+
       $view_data['can_edit'] = $this->is_superadmin();
-      $view_data['users'] = $this->Users_model->get_all_where(array('user_type' => 'staff', 'deleted' => 0))->result();
+      $view_data['users'] = $team_members;
       $view_data['teams'] = $teams;
       $view_data['can_filter'] = $this->is_superadmin();
+      $view_data['grid_data'] = $this->Weekly_model->get_details(array('user_id'=> $this->login_user->id))->result();
       $this->template->rander('weekly/index',$view_data);
     }
 
-    function get_week_kanban() {
+    function import_weekly_project() {
+
+      if (!$this->can_edit_projects()) {
+        redirect("forbidden");
+      }
+
       $range = date('Y-m-d', strtotime('+2 weeks'));
 
-      $data = array(
+      $options = array(
         'range' => $range,
         'deleted' => 0,
         'status' => 'open'
       );
 
-      $projects = $this->Projects_model->get_details($data)->result();
+      $projects = $this->Projects_model->get_details($options)->result();
 
-      $project_tasks = array();
+      $import_projects = array();
 
       foreach ($projects as $key => $project) {
-        $project_tasks[] = $this->Tasks_model->get_details(array('project_id'=>$project->id, 'range'=> $range))->result();
+        $import_projects[] = array(
+            'project_id' => $project->id,
+            'unique_id' => $project->unique_project_id,
+            'title' => $project->title,
+            'description' => $project->description,
+            'company_name' => $project->company_name,
+            'data-col' => '',
+            'data-row' => '',
+            'sizex' => "1",
+            'tasks' => $this->Tasks_model->get_details(array('project_id'=>$project->id))->result_array(),
+            'milestones' => $this->Milestones_model->get_details(array('project_id'=>$project->id))->result()
+         );
       }
 
-      echo json_encode(array('data'=>array_filter($project_tasks)));
+      $data['user_id'] = $this->login_user->id;
+      $data['grid_projects'] = serialize($import_projects);
+
+      $new_grid_id = $this->Weekly_model->save($data);
+
+      if ($new_grid_id) {
+          echo json_encode(array("success" => true, 'id' => $new_grid_id, 'message' => lang('import_success')));
+      } else {
+          echo json_encode(array("success" => false, 'message' => lang('error_occurred')));
+      }
+
     }
+
+    function import() {
+
+      $grid_data = $this->Weekly_model->get_details(array('user_id'=>$this->login_user->id))->row();
+
+      if($grid_data->id) {
+        $view_data['act'] = 'edit';
+        $view_data['grid_id'] = $grid_data->id;
+      }else{
+        $view_data['act'] = 'new';
+        $view_data['grid_id'] = '';
+      }
+
+      $this->load->view('weekly/import_weekly_modal', $view_data);
+    }
+
+    private function _calculate_hours($user) {
+      $range = date('Y-m-d', strtotime('+1 weeks'));
+
+      $options = array(
+        'range' => $range,
+        'assigned_to' => $user
+      );
+
+      $assigned_tasks = $this->Tasks_model->get_details($options)->result();
+
+      $task_hours = array();
+      foreach ($assigned_tasks as $key => $task) {
+        $options2 = array(
+          'related_to_type' => 'tasks',
+          'related_to_id' => $task->id,
+          'custom_field_id' =>  4
+        );
+
+        $task_hours = $this->Custom_field_values_model->get_details($options2)->result();
+      }
+
+      $allocated_hours = array();
+      foreach ($task_hours as $key => $hour) {
+        $allocated_hours[] = $task_hours[$key]->value;
+      }
+
+      $total_hours = array_sum($allocated_hours);
+
+      $user_time = $total_hours / 40;
+
+      if($user_time >= 1){
+        return 1;
+      }else{
+        return $user_time;
+      }
+    }
+
 }
