@@ -188,4 +188,9 @@ div.ganttview-block-text a { display: none; }
 
 #project-grid .kanban-item {
 	width: 100%;
+	min-height: 50px;
+}
+
+#project-grid .kanban-item .meta {
+	margin-top: 3px;
 }

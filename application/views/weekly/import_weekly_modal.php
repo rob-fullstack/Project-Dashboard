@@ -1,4 +1,4 @@
-<?php echo form_open(get_uri("weekly/import_weekly_project"), array("id" => "project-form", "class" => "general-form", "role" => "form")); ?>
+<?php echo form_open(get_uri("weekly/import_weekly_project"), array("id" => "import-form", "class" => "general-form", "role" => "form")); ?>
 <div class="modal-body clearfix">
   <p>This will automatically import projects that is not due with a span of two weeks and will refresh the board, click "Import" to proceed.<p>
 </div>
@@ -9,3 +9,19 @@
 <input type="hidden" name="act" value="<?php echo $act;?>">
 <input type="hidden" name="grid_id" value="<?php echo $grid_id;?>">
 <?php echo form_close(); ?>
+
+<script>
+  jQuery(document).ready( function() {
+    $("#import-form").appForm({
+        onSuccess: function (result) {
+            if (result.success) {
+              setTimeout( function(){
+                location.reload()
+              },1000);
+            } else {
+              console.log(result);
+            }
+        }
+    });
+  });
+</script>
