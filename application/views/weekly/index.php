@@ -28,8 +28,8 @@
             <div class="row">
                 <div class="col-md-12">
                     <button class="btn btn-default" id="reload-kanban-button"><i class="fa fa-refresh"></i></button>
-                    <a href="#" class="btn btn-default" title="Import Projects" data-act="ajax-modal" data-title="Import Projects" data-action-url="<?php echo get_uri('weekly/import')?>"><i class="fa fa-plus-circle"></i> Import Projects</a>
-                    <a href="#" class="btn btn-default" title="Import Projects Manually" data-act="ajax-modal" data-title="Import Projects Manually" data-action-url="404"><i class="fa fa-plus-circle"></i> Import Projects Manually</a>
+                    <a href="#" class="btn btn-default" title="Import Projects" data-act="ajax-modal" data-title="Import Projects" data-action-url="<?php echo get_uri('weekly/import');?>"><i class="fa fa-plus-circle"></i> Import Projects</a>
+                    <a href="#" class="btn btn-default" title="Import Projects Manually" data-act="ajax-modal" data-title="Import Projects Manually" data-action-url="<?php echo get_uri('weekly/import_manual');?>"><i class="fa fa-plus-circle"></i> Import Projects Manually</a>
 
                 <?php foreach ($users as $key => $user) { ?>
                   <span id="user_<?php echo $user['id']; ?>" class="avatar-sm avatar pull-right mt-5 mr10 weekly-avatar">
@@ -67,12 +67,25 @@
     </div>
     <div id="weekly-board" class="gridster">
       <ul id="project-grid">
-        <li id="proj-123" data-row="1" data-col="1" data-sizex="1" data-sizey="1">
-          <div class="kanban-item"> Test Project </div>
-        </li>
-        <li id="proj-234" data-row="2" data-col="1" data-sizex="1" data-sizey="1">
-          <div class="kanban-item"> Test Project 2</div>
-        </li>
+        <?php $i = 1; if(!empty($grid_data)): foreach ($grid_data as $key => $widget) {
+
+          $labels = "";
+
+          if (isset($widget['deadline']) || !empty($widget['deadline'])) {
+            $labels .= '<span class="label label-default deadline">'.date('d/m/y', strtotime($widget['deadline'])).'</span>';
+          }
+
+          ?>
+
+          <li id="proj-<?php echo $widget['project_id'];?>" data-project-id="<?php echo $widget['project_id'];?>" data-row="<?php echo ($widget['data-row'] ? $widget['data-row'] : $i )?>" data-col="<?php echo ($widget['data-col'] ? $widget['data-col'] : 1 )?>" data-sizex="<?php echo ($widget['sizex'] ? $widget['sizex'] : 1 )?>" data-sizey="1">
+            <a href="#" class="kanban-item" title="<?php echo $widget['title']?>">
+              <?php echo $widget['unique_id'].' | '.$widget['title'];?>
+            <div class="meta">
+              <?php echo $labels; ?>
+            </div>
+            </a>
+          </li>
+        <?php $i++; } endif;  ?>
       </ul>
     </div>
 </div>
@@ -87,7 +100,9 @@
         $teamSelect.select2();
 
         var weeklygrid = $("#weekly-grid").gridster({
-          widget_margins: [10, 10],
+          namespace: '#weekly-grid',
+          widget_margins: [10, 20],
+          autogenerate_stylesheet: true,
           widget_base_dimensions: [220, 50],
           max_row: 1,
           min_cols: 1,
@@ -97,40 +112,64 @@
         weeklygrid.disable();
 
         var projectgrid = $("#project-grid").gridster({
+          namespace: '#project-grid',
           widget_margins: [10, 5],
-          widget_base_dimensions: [220, 50],
+          widget_base_dimensions: [220, 70],
+          autogenerate_stylesheet: true,
+          avoid_overlapped_widgets: true,
           resize: {
             enabled: true,
             axes: ['x'],
             max_size: [5,1],
             stop: function(e, ui, $widget){
-              var newDimensions = this.serialize($widget)[0];
+              var newState = $widget[0].dataset;
+              var gridState = {
+                id: newState.projectId,
+                row: newState.row,
+                col: newState.col,
+                sizex: newState.sizex
+              };
 
               //prevent from resizing on col 1 and 2
-              if(newDimensions.col == 1 || newDimensions.col == 2){
-                var widgetId = $($widget).attr('id');
+              if(newState.col == 1 || newState.col == 2){
                 //$('#'+widgetId).attr('data-sizex', 1);
               }
 
+              update_grid(gridState);
             }
           },
           draggable: {
             stop: function(e, ui) {
               var newPosition = ui.$player[0].dataset;
+              var gridState = {
+                id: newPosition.projectId,
+                row: newPosition.row,
+                col: newPosition.col,
+                sizex: newPosition.sizex
+              }
 
               //revert size when dragging to col 1 and 2
               if(newPosition.col == 1 || newPosition.col == 2){
-                var widgetId = $(ui.$helper[0]).attr('id');
                 //$('#'+widgetId).attr('data-sizex', 1);
               }
+
+              update_grid(gridState);
             }
           },
           min_cols: 1,
           max_cols: 7,
         }).data('gridster');
 
-        function update_grid(grid) {
-          var gridData = grid.serialize();
+        function update_grid(gridState) {
+          $.ajax({
+              url: '<?php echo_uri("weekly/save_grid_status") ?>',
+              type: "POST",
+              data: {id: gridState.id, row: gridState.row, col: gridState.col, sizex: gridState.sizex},
+              success: function (response) {
+                console.log(response);
+                  appLoader.hide();
+              }
+          });
         }
 
         <?php foreach ($users as $key => $user): ?>

@@ -362,11 +362,13 @@ class Weekly extends MY_Controller {
       $view_data['users'] = $team_members;
       $view_data['teams'] = $teams;
       $view_data['can_filter'] = $this->is_superadmin();
-      $view_data['grid_data'] = $this->Weekly_model->get_details(array('user_id'=> $this->login_user->id))->result();
+      $view_data['grid_data'] = unserialize($this->Weekly_model->get_one_where(array('user_id'=>$this->login_user->id))->grid_projects);
       $this->template->rander('weekly/index',$view_data);
     }
 
     function import_weekly_project() {
+      $g_id = $this->input->post('grid_id');
+      $g_act = $this->input->post('act');
 
       if (!$this->can_edit_projects()) {
         redirect("forbidden");
@@ -391,6 +393,7 @@ class Weekly extends MY_Controller {
             'title' => $project->title,
             'description' => $project->description,
             'company_name' => $project->company_name,
+            'deadline' => $project->deadline,
             'data-col' => '',
             'data-row' => '',
             'sizex' => "1",
@@ -399,10 +402,16 @@ class Weekly extends MY_Controller {
          );
       }
 
+      $grid_data = $this->Weekly_model->get_one_where(array('user_id'=>$this->login_user->id));
+
       $data['user_id'] = $this->login_user->id;
       $data['grid_projects'] = serialize($import_projects);
 
-      $new_grid_id = $this->Weekly_model->save($data);
+      if($g_act === 'edit') {
+        $new_grid_id = $this->Weekly_model->update_where($data, array('id'=>$g_id));
+      }else{
+        $new_grid_id = $this->Weekly_model->save($data);
+      }
 
       if ($new_grid_id) {
           echo json_encode(array("success" => true, 'id' => $new_grid_id, 'message' => lang('import_success')));
@@ -425,6 +434,62 @@ class Weekly extends MY_Controller {
       }
 
       $this->load->view('weekly/import_weekly_modal', $view_data);
+    }
+
+    function import_manual() {
+      $view_data['projects'] =$this-> _get_all_projects_dropdown_list();
+      $this->load->view('weekly/import_manual_modal', $view_data);
+    }
+
+    function save_grid_status() {
+      $grid_id    = $this->input->post('id');
+      $grid_row   = $this->input->post('row');
+      $grid_col   = $this->input->post('col');
+      $grid_size  = $this->input->post('sizex');
+      $grid_data  = $this->Weekly_model->get_details(array('user_id'=>$this->login_user->id))->row();
+
+      $data = unserialize($grid_data->grid_projects);
+
+      $modified_grid = array();
+
+      foreach ($data as $key => $grid) {
+        if ($grid_id === $grid['project_id']) {
+          $modified_grid[$key] = array(
+            'project_id'    => $grid['project_id'],
+            'unique_id'     => $grid['unique_id'],
+            'title'         => $grid['title'],
+            'description'   => $grid['description'],
+            'company_name'  => $grid['company_name'],
+            'deadline'      => $grid['deadline'],
+            'data-col'      => $grid_col,
+            'data-row'      => $grid_row,
+            'sizex'         => $grid_size,
+            'tasks'         => $grid['tasks'],
+            'milestones'    => $grid['milestones']
+          );
+        }else{
+          $modified_grid[$key] = $grid;
+        }
+      }
+
+      $update_data = array('grid_projects'=>serialize($modified_grid));
+
+      $grid_update_id = $this->Weekly_model->update_where($update_data, array('id'=>$grid_data->id));
+
+      echo json_encode($modified_grid);
+
+    }
+
+    /* get all projects list */
+
+    private function _get_all_projects_dropdown_list() {
+        $projects = $this->Projects_model->get_dropdown_list(array("title"));
+
+        $projects_dropdown = array(array("id" => "", "text" => "- " . lang("project") . " -"));
+        foreach ($projects as $id => $title) {
+            $projects_dropdown[] = array("id" => $id, "text" => $title);
+        }
+        return $projects_dropdown;
     }
 
     private function _calculate_hours($user) {
