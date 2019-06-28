@@ -362,7 +362,8 @@ class Weekly extends MY_Controller {
       $view_data['users'] = $team_members;
       $view_data['teams'] = $teams;
       $view_data['can_filter'] = $this->is_superadmin();
-      $view_data['grid_data'] = unserialize($this->Weekly_model->get_one_where(array('user_id'=>$this->login_user->id))->grid_projects);
+      $view_data['grid_data'] = unserialize($this->Weekly_model->get_one_where(array('user_id'=>$this->login_user->id,'deleted'=>0))->grid_projects);
+      $view_data['grid_id'] = $this->Weekly_model->get_one_where(array('user_id'=>$this->login_user->id,'deleted'=>0))->id;
       $this->template->rander('weekly/index',$view_data);
     }
 
@@ -397,8 +398,9 @@ class Weekly extends MY_Controller {
             'data-col' => '',
             'data-row' => '',
             'sizex' => "1",
-            'tasks' => $this->Tasks_model->get_details(array('project_id'=>$project->id))->result_array(),
-            'milestones' => $this->Milestones_model->get_details(array('project_id'=>$project->id))->result()
+            'is_milestone'  => false,
+            'milesone_id'   => '',
+            'milestone_name'=> ''
          );
       }
 
@@ -441,6 +443,59 @@ class Weekly extends MY_Controller {
       $this->load->view('weekly/import_manual_modal', $view_data);
     }
 
+    function import_project_milestone() {
+      if (!$this->can_edit_projects()) {
+        redirect("forbidden");
+      }
+
+      $p_id = $this->input->post('project_id');
+      $m_id = $this->input->post('milestone_id');
+
+      $grid_entry = array();
+
+      $project   = $this->Projects_model->get_details(array('id'=>$p_id))->row();
+      $milestone  = $this->Milestones_model->get_one($m_id);
+
+      $data['user_id'] = $this->login_user->id;
+
+      $grid_entry[] = array(
+          'project_id' => $project->id,
+          'unique_id' => $project->unique_project_id,
+          'title' => $project->title,
+          'description' => $project->description,
+          'company_name' => $project->company_name,
+          'deadline' => $project->deadline,
+          'data-col' => '',
+          'data-row' => '',
+          'sizex' => "1",
+          'is_milestone'  => true,
+          'milesone_id'   => $milestone->id,
+          'milestone_name'=> $milestone->title
+       );
+
+       $cur_grid = $this->Weekly_model->get_details(array('user_id'=>$this->login_user->id,'deleted'=>0))->row();
+
+       if (!empty($cur_grid)) {
+        $de_grid   = unserialize($cur_grid->grid_projects);
+        $new_grid  = array_merge($de_grid,$grid_entry);
+
+        $data['grid_projects'] = serialize($new_grid);
+
+        $grid_id = $this->Weekly_model->update_where($data, array('id'=>$cur_grid->id));
+
+       } else {
+        $data['grid_projects'] = serialize($grid_entry);
+
+        $grid_id = $this->Weekly_model->save($data);
+       }
+
+       if ($grid_id) {
+         echo json_encode(array( 'success' => true, 'message' => 'Saved successfully.', 'id' => $grid_id ));
+       } else {
+         echo json_encode(array( 'success' => false, 'message' => 'Error saving changes.' ));
+       }
+    }
+
     function save_grid_status() {
       $grid_id    = $this->input->post('id');
       $grid_row   = $this->input->post('row');
@@ -464,8 +519,9 @@ class Weekly extends MY_Controller {
             'data-col'      => $grid_col,
             'data-row'      => $grid_row,
             'sizex'         => $grid_size,
-            'tasks'         => $grid['tasks'],
-            'milestones'    => $grid['milestones']
+            'is_milestone'  => $grid['is_milestone'],
+            'milesone_id'   => $grid['milesone_id'],
+            'milestone_name'=> $grid['milestone_name']
           );
         }else{
           $modified_grid[$key] = $grid;
@@ -477,7 +533,30 @@ class Weekly extends MY_Controller {
       $grid_update_id = $this->Weekly_model->update_where($update_data, array('id'=>$grid_data->id));
 
       echo json_encode($modified_grid);
+    }
 
+    function get_project_milestones($project_id) {
+      if (!$this->can_edit_projects()) {
+        redirect('forbidden');
+      }
+
+      echo $this->_get_milestones_dropdown_list($project_id);
+    }
+
+    function delete_grid() {
+      if (!$this->can_delete_projects()) {
+        redirect('forbidden');
+      }
+
+      $id = $this->input->post('id');
+
+      $success = $this->Weekly_model->delete($id);
+
+      if ($success) {
+        echo json_encode(array("success" => true, 'message' => lang('record_deleted'), 'id' => $id));
+      } else {
+        echo json_encode(array("success" => false, 'message' => lang('record_cannot_be_deleted')));
+      }
     }
 
     /* get all projects list */
@@ -490,6 +569,16 @@ class Weekly extends MY_Controller {
             $projects_dropdown[] = array("id" => $id, "text" => $title);
         }
         return $projects_dropdown;
+    }
+
+    private function _get_milestones_dropdown_list($project_id = 0) {
+        $milestones = $this->Milestones_model->get_all_where(array("project_id" => $project_id, "deleted" => 0))->result();
+        $milestone_dropdown = array(array("id" => "", "text" => "- " . lang("milestone") . " -"));
+
+        foreach ($milestones as $milestone) {
+            $milestone_dropdown[] = array("id" => $milestone->id, "text" => $milestone->title);
+        }
+        return json_encode($milestone_dropdown);
     }
 
     private function _calculate_hours($user) {

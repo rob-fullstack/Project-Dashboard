@@ -172,6 +172,20 @@
           });
         }
 
+        $('#reload-kanban-button').on('click',  function() {
+          var grid_id = <?php echo ($grid_id ? $grid_id : 0); ?>;
+          $.ajax({
+              url: '<?php echo_uri("weekly/delete_grid") ?>',
+              type: "POST",
+              data: {id: grid_id},
+              success: function (response) {
+                location.reload();
+                console.log(response);
+                appLoader.hide();
+              }
+          });
+        });
+
         <?php foreach ($users as $key => $user): ?>
 
         var bar_<?php echo $user['id']; ?> = new ProgressBar.Circle(user_<?php echo $user['id']; ?>, {
