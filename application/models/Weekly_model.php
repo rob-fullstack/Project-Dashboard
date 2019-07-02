@@ -29,4 +29,19 @@ class Weekly_model extends Crud_model {
       return $this->db->query($sql);
     }
 
+    function delete_entry($options = array()) {
+      $weekly_table = $this->db->dbprefix('project_weekly');
+      $weekly_time_table = $this->db->dbprefix('project_weekly_times');
+
+      $grid_id = get_array_value($options, 'grid_id');
+
+      $delete_weekly_sql = "UPDATE $weekly_table SET $weekly_table.deleted=1 WHERE $weekly_table.id=$grid_id; ";
+      $this->db->query($delete_weekly_sql);
+
+      $delete_weekly_time_sql = "UPDATE $weekly_time_table SET $weekly_time_table.deleted=1 WHERE $weekly_time_table.grid_id=$grid_id; ";
+      $this->db->query($delete_weekly_time_sql);
+
+      return true;
+    }
+
 }

@@ -27,8 +27,9 @@
         <div class="p15 bg-white">
             <div class="row">
                 <div class="col-md-12">
-                    <button class="btn btn-default" id="reload-kanban-button"><i class="fa fa-refresh"></i></button>
-                    <a href="#" class="btn btn-default" title="Import Projects" data-act="ajax-modal" data-title="Import Projects" data-action-url="<?php echo get_uri('weekly/import');?>"><i class="fa fa-plus-circle"></i> Import Projects</a>
+                  <button class="btn btn-default" id="reload-kanban-button"><i class="fa fa-refresh"></i></button>
+                  <button class="btn btn-default" id="clear-kanban-button"><i class="fa fa-trash"></i></button>
+                  <a href="#" class="btn btn-default" title="Import Projects" data-act="ajax-modal" data-title="Import Projects" data-action-url="<?php echo get_uri('weekly/import');?>"><i class="fa fa-plus-circle"></i> Import Projects</a>
                     <a href="#" class="btn btn-default" title="Import Projects Manually" data-act="ajax-modal" data-title="Import Projects Manually" data-action-url="<?php echo get_uri('weekly/import_manual');?>"><i class="fa fa-plus-circle"></i> Import Projects Manually</a>
 
                 <?php foreach ($users as $key => $user) { ?>
@@ -40,53 +41,65 @@
             </div>
         </div>
     </div>
-    <div id="weekly-kanban" class="gridster">
-      <ul id="weekly-grid">
-        <li data-row="1" data-col="1" data-sizex="1" data-sizey="1">
-          <div class="kanban-col-title" style="background: #b9b9b9;"> 2 Weeks </div>
-        </li>
-        <li data-row="1" data-col="2" data-sizex="1" data-sizey="1">
-          <div class="kanban-col-title" style="background: #5AA574;"> Ready to start </div>
-        </li>
-        <li data-row="1" data-col="3" data-sizex="1" data-sizey="1">
-          <div class="kanban-col-title" style="background: #F2B03F;"> Monday </div>
-        </li>
-        <li data-row="1" data-col="4" data-sizex="1" data-sizey="1">
-          <div class="kanban-col-title" style="background: #F2B03F;"> Tuesday </div>
-        </li>
-        <li data-row="1" data-col="5" data-sizex="1" data-sizey="1">
-          <div class="kanban-col-title" style="background: #F2B03F;"> Wednesday </div>
-        </li>
-        <li data-row="1" data-col="6" data-sizex="1" data-sizey="1">
-          <div class="kanban-col-title" style="background: #F2B03F;"> Thursday </div>
-        </li>
-        <li data-row="1" data-col="7" data-sizex="1" data-sizey="1">
-          <div class="kanban-col-title" style="background: #F2B03F;"> Friday </div>
-        </li>
-      </ul>
-    </div>
-    <div id="weekly-board" class="gridster">
-      <ul id="project-grid">
-        <?php $i = 1; if(!empty($grid_data)): foreach ($grid_data as $key => $widget) {
-
-          $labels = "";
-
-          if (isset($widget['deadline']) || !empty($widget['deadline'])) {
-            $labels .= '<span class="label label-default deadline">'.date('d/m/y', strtotime($widget['deadline'])).'</span>';
-          }
-
-          ?>
-
-          <li id="proj-<?php echo $widget['project_id'];?>" data-project-id="<?php echo $widget['project_id'];?>" data-row="<?php echo ($widget['data-row'] ? $widget['data-row'] : $i )?>" data-col="<?php echo ($widget['data-col'] ? $widget['data-col'] : 1 )?>" data-sizex="<?php echo ($widget['sizex'] ? $widget['sizex'] : 1 )?>" data-sizey="1">
-            <a href="#" class="kanban-item" title="<?php echo $widget['title']?>">
-              <?php echo $widget['unique_id'].' | '.$widget['title'];?>
-            <div class="meta">
-              <?php echo $labels; ?>
-            </div>
-            </a>
+    <div id="project-gridly">
+      <div id="weekly-kanban" class="gridster">
+        <ul id="weekly-grid">
+          <li data-row="1" data-col="1" data-sizex="1" data-sizey="1">
+            <div class="kanban-col-title" style="background: #b9b9b9;"> 2 Weeks </div>
           </li>
-        <?php $i++; } endif;  ?>
-      </ul>
+          <li data-row="1" data-col="2" data-sizex="1" data-sizey="1">
+            <div class="kanban-col-title" style="background: #5AA574;"> Ready to start </div>
+          </li>
+          <li data-row="1" data-col="3" data-sizex="1" data-sizey="1">
+            <div class="kanban-col-title" style="background: #F2B03F;"> Monday </div>
+          </li>
+          <li data-row="1" data-col="4" data-sizex="1" data-sizey="1">
+            <div class="kanban-col-title" style="background: #F2B03F;"> Tuesday </div>
+          </li>
+          <li data-row="1" data-col="5" data-sizex="1" data-sizey="1">
+            <div class="kanban-col-title" style="background: #F2B03F;"> Wednesday </div>
+          </li>
+          <li data-row="1" data-col="6" data-sizex="1" data-sizey="1">
+            <div class="kanban-col-title" style="background: #F2B03F;"> Thursday </div>
+          </li>
+          <li data-row="1" data-col="7" data-sizex="1" data-sizey="1">
+            <div class="kanban-col-title" style="background: #F2B03F;"> Friday </div>
+          </li>
+        </ul>
+      </div>
+      <div id="weekly-board" class="gridster">
+        <ul id="project-grid">
+          <?php $i = 1; if(!empty($grid_data)): foreach ($grid_data as $key => $widget) {
+
+            $labels = "";
+
+            if (isset($widget['deadline']) || !empty($widget['deadline'])) {
+              if ($widget['is_milestone']) {
+                $labels .= '<span class="label label-'.(strtotime($widget['deadline']) < strtotime(date('Y-m-d'), strtotime('+3 days')) ? 'danger' : 'warning' ).' deadline">'.date('d/m/y', strtotime($widget['deadline'])).'</span>';
+              } else {
+                $labels .= '<span class="label label-'.(strtotime($widget['deadline']) < strtotime(date('Y-m-d'), strtotime('+3 days')) ? 'danger' : 'default' ).' deadline">'.date('d/m/y', strtotime($widget['deadline'])).'</span>';
+              }
+            }
+
+            if ($widget['is_milestone']) {
+              if (isset($widget['milesone_id']) || !empty($widget['milesone_id'])) {
+                $labels .= '<span class="milestone-title">'.$widget['milestone_name'].'</span>';
+              }
+            }
+
+            ?>
+
+            <li id="proj-<?php echo $widget['project_id'];?>" data-project-id="<?php echo $widget['project_id'];?>" data-assigne="<?php echo $widget['assigned_to'];?>" data-row="<?php echo ($widget['data-row'] ? $widget['data-row'] : $i )?>" data-col="<?php echo ($widget['data-col'] ? $widget['data-col'] : 1 )?>" data-sizex="<?php echo ($widget['sizex'] ? $widget['sizex'] : 1 )?>" data-sizey="1" data-time="<?php echo $widget['total_hours'];?>">
+              <a href="#" class="kanban-item" title="<?php echo $widget['title']?>">
+                <?php echo $widget['unique_id'].' | '.$widget['title'];?>
+              <div class="meta">
+                <?php echo $labels; ?>
+              </div>
+              </a>
+            </li>
+          <?php $i++; } endif;  ?>
+        </ul>
+      </div>
     </div>
 </div>
 
@@ -113,8 +126,8 @@
 
         var projectgrid = $("#project-grid").gridster({
           namespace: '#project-grid',
-          widget_margins: [10, 5],
-          widget_base_dimensions: [220, 70],
+          widget_margins: [10, 10],
+          widget_base_dimensions: [220, 80],
           autogenerate_stylesheet: true,
           avoid_overlapped_widgets: true,
           resize: {
@@ -123,56 +136,83 @@
             max_size: [5,1],
             stop: function(e, ui, $widget){
               var newState = $widget[0].dataset;
-              var gridState = {
-                id: newState.projectId,
-                row: newState.row,
-                col: newState.col,
-                sizex: newState.sizex
-              };
 
               //prevent from resizing on col 1 and 2
-              if(newState.col == 1 || newState.col == 2){
-                //$('#'+widgetId).attr('data-sizex', 1);
+              if (newState.col == 1 || newState.col == 2) {
+                var widgetId = $($widget[0]).attr('id');
+                this.resize_widget($('#'+widgetId),1,1);
+
+                newState.sizex = '1';
               }
 
-              update_grid(gridState);
+              update_grid(newState);
             }
           },
           draggable: {
             stop: function(e, ui) {
               var newPosition = ui.$player[0].dataset;
-              var gridState = {
-                id: newPosition.projectId,
-                row: newPosition.row,
-                col: newPosition.col,
-                sizex: newPosition.sizex
-              }
 
               //revert size when dragging to col 1 and 2
               if(newPosition.col == 1 || newPosition.col == 2){
-                //$('#'+widgetId).attr('data-sizex', 1);
+                var widgetId = $(ui.$helper[0]).attr('id');
+                this.resize_widget($('#'+widgetId),1,1);
+
+                newPosition.sizex = '1';
               }
 
-              update_grid(gridState);
+              update_grid(newPosition);
             }
           },
           min_cols: 1,
           max_cols: 7,
         }).data('gridster');
 
+        var userBar = {};
+
+        <?php foreach ($users as $key => $user): ?>
+
+        userBar['user_<?php echo $user['id']?>'] = new ProgressBar.Circle(user_<?php echo $user['id']; ?>, {
+            color: '#28B513',
+            trailColor: '#eee',
+            trailWidth: 10,
+            duration: 1000,
+            easing: 'easeInOut',
+            strokeWidth: 10,
+            from: {color: '#28B513', a:0},
+            to: {color: <?php echo ($user['time_allocated'] <= 1 ? '"#28B513"' : '"#28B513"')?>, a:1},
+            // Set default step function for all animate calls
+            step: function(state, circle) {
+              circle.path.setAttribute('stroke', state.color);
+            }
+          });
+
+          userBar['user_<?php echo $user['id']?>'].animate(<?php echo $user['time_allocated']?>);
+
+        <?php endforeach; ?>
+
         function update_grid(gridState) {
           $.ajax({
               url: '<?php echo_uri("weekly/save_grid_status") ?>',
               type: "POST",
-              data: {id: gridState.id, row: gridState.row, col: gridState.col, sizex: gridState.sizex},
+              data: {
+                id: gridState.projectId,
+                row: gridState.row,
+                col: gridState.col,
+                sizex: gridState.sizex,
+                time: gridState.time,
+                assignee: gridState.assigne
+              },
               success: function (response) {
-                console.log(response);
-                  appLoader.hide();
+                appLoader.hide();
+                var userTime = JSON.parse(response);
+                $(userTime.data).each( function(){
+                  userBar[this.user_id].animate(this.time_allocated);
+                });
               }
           });
         }
 
-        $('#reload-kanban-button').on('click',  function() {
+        $('#clear-kanban-button').on('click',  function() {
           var grid_id = <?php echo ($grid_id ? $grid_id : 0); ?>;
           $.ajax({
               url: '<?php echo_uri("weekly/delete_grid") ?>',
@@ -180,32 +220,10 @@
               data: {id: grid_id},
               success: function (response) {
                 location.reload();
-                console.log(response);
                 appLoader.hide();
               }
           });
         });
-
-        <?php foreach ($users as $key => $user): ?>
-
-        var bar_<?php echo $user['id']; ?> = new ProgressBar.Circle(user_<?php echo $user['id']; ?>, {
-          color: '#28B513',
-          trailColor: '#eee',
-          trailWidth: 8,
-          duration: 2800,
-          easing: 'easeInOut',
-          strokeWidth: 8,
-          from: {color: '#28B513', a:0},
-          to: {color: '#E96464', a:1},
-          // Set default step function for all animate calls
-          step: function(state, circle) {
-            circle.path.setAttribute('stroke', state.color);
-          }
-        });
-
-        bar_<?php echo $user['id']; ?>.animate(<?php echo $user['hours']?>);
-
-        <?php endforeach; ?>
     });
 
   </script>
