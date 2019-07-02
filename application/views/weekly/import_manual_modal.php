@@ -48,8 +48,7 @@ $(document).ready( function() {
           url: "<?php echo get_uri("weekly/get_project_milestones"); ?>" + "/" + project_id,
           dataType: "json",
           success: function (result) {
-            console.log(result);
-              $('#milestone_id').select2({data: result});
+            $('#milestone_id').select2({data: result});
           }
       });
   });
