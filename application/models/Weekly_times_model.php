@@ -33,6 +33,11 @@ class Weekly_times_model extends Crud_model {
         $where .= " AND $weekly_time_table.grid_id=$grid_id";
       }
 
+      $has_started = get_array_value($options, "has_started");
+      if ($has_started) {
+        $where .= " AND $weekly_time_table.has_started=$has_started";
+      }
+
       $sql = "SELECT $weekly_time_table.*
       FROM $weekly_time_table
       WHERE $weekly_time_table.deleted=0 $where";

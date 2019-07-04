@@ -142,23 +142,6 @@ class Weekly extends MY_Controller {
         }
     }
 
-    private function can_comment_on_tasks() {
-        if ($this->login_user->user_type == "staff") {
-            if ($this->can_manage_all_projects()) {
-                return true;
-            } else if (get_array_value($this->login_user->permissions, "can_comment_on_tasks") == "1") {
-                //check is user a project member
-                return $this->is_user_a_project_member;
-            }
-        } else {
-            //check settings for client's project permission
-            if (get_setting("client_can_comment_on_tasks")) {
-                //even the settings allow to create/edit task, the client can only create their own project's tasks
-                return $this->is_clients_project;
-            }
-        }
-    }
-
     private function can_view_milestones() {
         if ($this->login_user->user_type == "staff") {
             if ($this->can_manage_all_projects()) {
@@ -209,83 +192,6 @@ class Weekly extends MY_Controller {
         }
     }
 
-    private function can_delete_files() {
-        if ($this->login_user->user_type == "staff") {
-            if ($this->can_manage_all_projects()) {
-                return true;
-            } else if (get_array_value($this->login_user->permissions, "can_delete_files") == "1") {
-                //check is user a project member
-                return $this->is_user_a_project_member;
-            }
-        }
-    }
-
-    private function can_view_files() {
-        if ($this->login_user->user_type == "staff") {
-            if ($this->can_manage_all_projects()) {
-                return true;
-            } else {
-                //check is user a project member
-                return $this->is_user_a_project_member;
-            }
-        } else {
-            //check settings for client's project permission
-            if (get_setting("client_can_view_project_files")) {
-                return $this->is_clients_project;
-            }
-        }
-    }
-
-    private function can_add_files() {
-        if ($this->login_user->user_type == "staff") {
-            if ($this->can_manage_all_projects()) {
-                return true;
-            } else {
-                //check is user a project member
-                return $this->is_user_a_project_member;
-            }
-        } else {
-            //check settings for client's project permission
-            if (get_setting("client_can_add_project_files")) {
-                return $this->is_clients_project;
-            }
-        }
-    }
-
-    private function can_comment_on_files() {
-        if ($this->login_user->user_type == "staff") {
-            if ($this->can_manage_all_projects()) {
-                return true;
-            } else {
-                //check is user a project member
-                return $this->is_user_a_project_member;
-            }
-        } else {
-            //check settings for client's project permission
-            if (get_setting("client_can_comment_on_files")) {
-                //even the settings allow to create/edit task, the client can only comment on their own project's files
-                return $this->is_clients_project;
-            }
-        }
-    }
-
-    private function can_view_gantt() {
-        if ($this->login_user->user_type == "staff") {
-            if ($this->can_manage_all_projects()) {
-                return true;
-            } else {
-                //check is user a project member
-                return $this->is_user_a_project_member;
-            }
-        } else {
-            //check settings for client's project permission
-            if (get_setting("client_can_view_gantt")) {
-                //even the settings allow to view gantt, the client can only view on their own project's gantt
-                return $this->is_clients_project;
-            }
-        }
-    }
-
     /* load the project settings into ci settings */
 
     private function init_project_settings($project_id) {
@@ -295,38 +201,6 @@ class Weekly extends MY_Controller {
         }
     }
 
-    private function can_view_timesheet($project_id = 0) {
-        if (!get_setting("module_project_timesheet")) {
-            return false;
-        }
-
-        if ($this->login_user->user_type == "staff") {
-            if ($this->can_manage_all_projects()) {
-                return true;
-            } else {
-
-
-                if ($project_id) {
-                    //check is user a project member
-                    return $this->is_user_a_project_member;
-                } else {
-                    $access_info = $this->get_access_info("timesheet_manage_permission");
-
-                    if ($access_info->access_type == "all") {
-                        return true;
-                    } else if (count($access_info->allowed_members)) {
-                        return true;
-                    }
-                }
-            }
-        } else {
-            //check settings for client's project permission
-            if (get_setting("client_can_view_timesheet")) {
-                //even the settings allow to view gantt, the client can only view on their own project's gantt
-                return $this->is_clients_project;
-            }
-        }
-    }
 
     /* load weekly project view */
 
@@ -356,7 +230,7 @@ class Weekly extends MY_Controller {
           'id' => $user->id,
           'full_name' => $user->first_name.' '.$user->last_name,
           'image' => $user->image,
-          'time_allocated' => $this->_calculate_hours($user->id, $view_data['grid_id'])
+          'time_allocated' => $this->_calculate_hours(array('user_id'=>$user->id, 'grid_id'=>$view_data['grid_id']))
         );
       }
 
@@ -376,61 +250,21 @@ class Weekly extends MY_Controller {
         redirect("forbidden");
       }
 
-      $range = date('Y-m-d', strtotime('+2 weeks'));
-
       $options = array(
-        'range' => $range,
-        'deleted' => 0,
-        'status' => 'open'
+        'range' => date('Y-m-d', strtotime('+2 weeks')),
+        'deleted' => 0
       );
 
-      $projects = $this->Projects_model->get_details($options)->result();
-
-      $import_projects = array();
-
-      foreach ($projects as $key => $project) {
-        $project_members = $this->Project_members_model->get_details(array('project_id'=>$project->id,'deleted'=>0))->result();
-        $project_tasks = $this->Tasks_model->get_details(array('project_id'=>$project->id,'deleted'=> 0))->result();
-
-        $assignees = array();
-        foreach ($project_members as $key => $member) {
-          $assignees[] = $member->user_id;
-        }
-
-        $tasks = array();
-        $total_time = array();
-        foreach ($project_tasks as $key => $task) {
-          $custom_values = $this->Custom_field_values_model->get_details(array('related_to_type'=>'tasks', 'related_to_id'=> $task->id , 'custom_field_id'=> 4))->result();
-          $tasks[] = array(
-            'id'    => $task->id,
-            'title' => $task->title,
-            'esti_hours' => $custom_values[0]->value
-          );
-          $total_time[] = $custom_values[0]->value;
-        }
-
-        $import_projects[] = array(
-            'project_id' => $project->id,
-            'unique_id' => $project->unique_project_id,
-            'title' => $project->title,
-            'description' => $project->description,
-            'company_name' => $project->company_name,
-            'deadline' => $project->deadline,
-            'assigned_to' => implode(',',$assignees),
-            'total_hours' => ''.array_sum($total_time).'',
-            'data-col' => '',
-            'data-row' => '',
-            'sizex' => '1',
-            'is_milestone'  => false,
-            'milesone_id'   => '',
-            'milestone_name'=> ''
-         );
-      }
+      $get_all = array_merge(
+        $this->_create_grid_items('projects', $options),
+        //$this->_create_grid_items('tasks', $options),
+        $this->_create_grid_items('milestones', $options)
+      );
 
       $grid_data = $this->Weekly_model->get_one_where(array('user_id'=>$this->login_user->id));
 
       $data['user_id'] = $this->login_user->id;
-      $data['grid_projects'] = serialize($import_projects);
+      $data['grid_projects'] = serialize($get_all);
       $data['created'] = date('Y-m-d');
 
       if($g_act === 'edit') {
@@ -440,9 +274,9 @@ class Weekly extends MY_Controller {
       }
 
       if ($new_grid_id) {
-          echo json_encode(array("success" => true, 'id' => $new_grid_id, 'message' => lang('import_success'), 'import_data'=> $import_projects));
+          echo json_encode(array("success" => true, 'id' => $new_grid_id, 'message' => lang('import_success'), 'import_data'=> $get_all));
       } else {
-          echo json_encode(array("success" => false, 'message' => lang('error_occurred'), 'import_data'=> $import_projects));
+          echo json_encode(array("success" => false, 'message' => lang('error_occurred'), 'import_data'=> $get_all));
       }
     }
 
@@ -513,7 +347,7 @@ class Weekly extends MY_Controller {
           'data-col' => '',
           'data-row' => '',
           'sizex' => '1',
-          'is_milestone'  => ($m_id ? 'true' : 'false'),
+          'is_milestone'  => ($m_id ? true : false),
           'milesone_id'   => ($m_id ? $milestone->id : ''),
           'milestone_name'=> ($m_id ? $milestone->title : '')
        );
@@ -552,28 +386,11 @@ class Weekly extends MY_Controller {
 
       $data = unserialize($grid_data->grid_projects);
 
-      $modified_grid = array();
-
       foreach ($data as $key => $grid) {
         if ($project_id === $grid['project_id']) {
-          $modified_grid[$key] = array(
-            'project_id'    => $grid['project_id'],
-            'unique_id'     => $grid['unique_id'],
-            'title'         => $grid['title'],
-            'description'   => $grid['description'],
-            'company_name'  => $grid['company_name'],
-            'deadline'      => $grid['deadline'],
-            'assigned_to'   => $grid['assigned_to'],
-            'total_hours'   => $grid['total_hours'],
-            'data-col'      => $grid_col,
-            'data-row'      => $grid_row,
-            'sizex'         => $grid_size,
-            'is_milestone'  => $grid['is_milestone'],
-            'milesone_id'   => $grid['milesone_id'],
-            'milestone_name'=> $grid['milestone_name']
-          );
-        } else {
-          $modified_grid[$key] = $grid;
+          $data[$key]['data-col'] = $grid_col;
+          $data[$key]['data-row'] = $grid_row;
+          $data[$key]['sizex']    = $grid_size;
         }
       }
 
@@ -604,21 +421,43 @@ class Weekly extends MY_Controller {
             );
           }
 
-          $update_id = $this->Weekly_times_model->update_where($update_user, array('user_id'=>$assignee));
+          $update_id = $this->Weekly_times_model->update_where($update_user, array('user_id'=>$assignee, 'project_id'=> $project_id));
         }
 
         //get new updated time allocation
         $new_user_times[] = array(
           'user_id' => 'user_'.$assignee,
-          'time_allocated' => $new_user_time = $this->_calculate_hours($assignee, $grid_data->id)
+          'time_allocated' => $new_user_time = $this->_calculate_hours(array('user_id'=>$assignee, 'grid_id'=>$grid_data->id))
         );
       }
 
-      $update_data = array('grid_projects'=>serialize($modified_grid));
+      $update_data = array('grid_projects'=>serialize($data));
 
       $grid_update_id = $this->Weekly_model->update_where($update_data, array('id'=>$grid_data->id));
 
       echo json_encode(array('data'=>$new_user_times));
+    }
+
+    function refresh_grid($grid_id) {
+      $grid_data = unserialize($this->Weekly_model->get_details(array('id'=>$grid_id, 'deleted'=> 0))->result()[0]->grid_projects);
+
+      foreach ($grid_data as $key => $data) {
+        if ($data['item_type'] === 'milestones') {
+          $grid_data[$key]['milestone_due'] = $this->Milestones_model->get_details(array('project_id'=>$data['project_id']))->result()[0]->due_date;
+        } else {
+          $grid_data[$key]['deadline'] = $this->Projects_model->get_details(array('id'=>$data['project_id']))->result()[0]->deadline;
+        }
+      }
+
+      $update_data = array('grid_projects'=>serialize($grid_data));
+
+      $grid_update_id = $this->Weekly_model->update_where($update_data, array('id'=>$grid_id));
+
+      if ($grid_update_id) {
+        echo json_encode(array("success" => true, 'message' => lang('record_updated'), 'id' => $grid_update_id));
+      } else {
+        echo json_encode(array("success" => false, 'message' => lang('record_cannot_be_updated')));
+      }
     }
 
     function get_project_milestones($project_id) {
@@ -667,16 +506,97 @@ class Weekly extends MY_Controller {
         return json_encode($milestone_dropdown);
     }
 
-    private function _calculate_hours($user, $grid_id) {
-      $range = date('Y-m-d', strtotime('+1 weeks'));
+    private function _create_grid_items($item_type, $item_options) {
 
-      $weekly_times = $this->Weekly_times_model->get_details(array('user_id'=>$user,'grid_id'=>$grid_id))->result();
+      $return_data = array();
+      if ($item_type === 'projects') {
+        $item_options['status'] = 'open';
+        $data_items = $this->Projects_model->get_details($item_options)->result();
+      }
+
+      if ($item_type === 'tasks') {
+        $data_items = $this->Tasks_model->get_details($item_options)->result();
+      }
+
+      if ($item_type === 'milestones') {
+        $data_items = $this->Milestones_model->get_details($item_options)->result();
+      }
+
+      $total_time = array();
+      $assignees = array();
+      foreach ($data_items as $key => $item) {
+
+        if ($item_type === 'milestones') {
+          $project_details = $this->Projects_model->get_details(array('id'=>$item->project_id, 'deleted'=> 0))->row();
+
+          if ($item_type === 'tasks') {
+            $total_time[] = $this->_get_estimated_hours($item->id);
+          }
+        }
+
+        if ($item_type === 'projects' || $item_type === 'milestones') {
+
+          if ($item_type === 'milestones') {
+            $members = $this->Project_members_model->get_details(array('project_id'=>$item->project_id,'deleted'=>0))->result();
+            $tasks = $this->Tasks_model->get_details(array('project_id'=> $item->project_id, 'status'=> 'open', 'deleted'=>0))->result();
+          } else {
+            $members = $this->Project_members_model->get_details(array('project_id'=>$item->id,'deleted'=>0))->result();
+            $tasks = $this->Tasks_model->get_details(array('project_id'=> $item->id, 'status'=> 'open', 'deleted'=>0))->result();
+          }
+
+          foreach ($tasks as $key => $task) {
+            $total_time[] = $this->_get_estimated_hours($task->id);
+          }
+
+          foreach ($members as $key => $member) {
+            $assignees[] = $member->user_id;
+          }
+
+        } else if ($item_type === 'tasks') {
+          $assignee = explode(',',$item->assigned_to) ;
+          $collaborators = $item->collaborators;
+
+          $e_collaborators = explode(',',$collaborators);
+
+          $assignees = array_merge($assignee, $e_collaborators);
+        }
+
+        $return_data[] = array(
+            'project_id' => ($item_type === 'projects' ? $item->id : $project_details->id),
+            'unique_id' => ($item_type === 'projects' ? $item->unique_project_id : $project_details->unique_project_id),
+            'title' => ($item_type === 'projects' ? $item->title : $project_details->title),
+            'description' => ($item_type === 'projects' ? $item->description : $project_details->description),
+            'company_name' => ($item_type === 'projects' ? $item->company_name : $project_details->company_name),
+            'deadline' => ($item_type === 'projects' ? $item->deadline : $project_details->deadline),
+            'assigned_to' => implode(',',$assignees),
+            'total_hours' => ''.array_sum($total_time).'',
+            'data-col' => '',
+            'data-row' => '',
+            'sizex' => '1',
+            'item_type' => $item_type,
+            'is_milestone'  => ($item_type === 'milestones' ? true : false),
+            'milestone_id'   => ($item_type === 'milestones' ? $item->id : ''),
+            'milestone_name'=> ($item_type === 'milestones' ? $item->title : ''),
+            'milestone_due'=> ($item_type === 'milestones' ? $item->due_date : '')
+         );
+      }
+
+      return $return_data;
+    }
+
+    private function _get_estimated_hours($id) {
+      return $this->Custom_field_values_model->get_details(array('related_to_type'=>'tasks', 'related_to_id'=> $id , 'custom_field_id'=> 4))->row()->value;
+    }
+
+    private function _calculate_hours($options) {
+      $user       = get_array_value($options, 'user_id');
+      $grid_id    = get_array_value($options, 'grid_id');
+
+      $weekly_times = $this->Weekly_times_model->get_details(array('user_id'=>$user,'grid_id'=>$grid_id, 'has_started'=> 1))->result();
 
       $allocated_hours = array();
       foreach ($weekly_times as $key => $hour) {
-        if ($hour->has_started) {
-          $allocated_hours[] = $hour->time_allocated;
-        }
+        $allocated_hours[] = $hour->time_allocated;
       }
 
       $total_hours = array_sum($allocated_hours);
