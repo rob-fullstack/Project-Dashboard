@@ -20,6 +20,7 @@ class Weekly extends MY_Controller {
         $this->load->model("Custom_field_values_model");
         $this->load->model("Weekly_model");
         $this->load->model("Weekly_times_model");
+        $this->load->model("Tasks_weekly_model");
     }
 
     private function can_manage_all_projects() {
@@ -256,9 +257,8 @@ class Weekly extends MY_Controller {
       );
 
       $get_all = array_merge(
-        $this->_create_grid_items('projects', $options),
-        //$this->_create_grid_items('tasks', $options),
-        $this->_create_grid_items('milestones', $options)
+        $this->_create_project_grid('projects', $options),
+        $this->_create_project_grid('milestones', $options)
       );
 
       $grid_data = $this->Weekly_model->get_one_where(array('user_id'=>$this->login_user->id));
@@ -278,6 +278,18 @@ class Weekly extends MY_Controller {
       } else {
           echo json_encode(array("success" => false, 'message' => lang('error_occurred'), 'import_data'=> $get_all));
       }
+    }
+
+    function test() {
+      $options = array(
+        'user_id' => 4,
+        'project_id'=> 159,
+        'range' => date('Y-m-d', strtotime('+2 weeks')),
+      );
+
+      echo '<pre>';
+      print_r($this->_create_task_grid($options));
+      echo '</pre>';
     }
 
     function import() {
@@ -382,6 +394,7 @@ class Weekly extends MY_Controller {
       $grid_size      = $this->input->post('sizex');
       $grid_assignees = explode(',',$this->input->post('assignee'));
       $grid_time      = $this->input->post('time');
+      $grid_type      = $this->input->post('type');
       $grid_data      = $this->Weekly_model->get_details(array('user_id'=>$this->login_user->id))->row();
 
       $data = unserialize($grid_data->grid_projects);
@@ -398,6 +411,19 @@ class Weekly extends MY_Controller {
       $new_user_time = array();
       foreach ($grid_assignees as $key => $assignee) {
         $assignee_rows = $this->Weekly_times_model->get_details(array('user_id'=> $assignee, 'project_id' => $project_id));
+        $assignee_tasks_rows = $this->Tasks_weekly_model->get_details(array('user_id'=> $assignee, 'project_grid_id' => $grid_data->id));
+
+        $tasks_grid_data = array(
+          'user_id' => $assignee,
+          'grid_tasks' => serialize($this->_create_task_grid(array('user_id'=>$assignee,'project_id'=>$project_id))),
+          'project_grid_id' => $grid_data->id
+        );
+
+        if ($assignee_tasks_rows->num_rows <= 0) {
+          $task_grid_id = $this->Tasks_weekly_model->save($tasks_grid_data);
+        } else {
+          $task_grid_id = $this->Tasks_weekly_model->update_where($tasks_grid_data, array('user_id'=>$assignee, 'project_grid_id'=>$grid_data->id));
+        }
 
         if ($assignee_rows->num_rows() <= 0) {
           $user_time[] = array(
@@ -405,6 +431,7 @@ class Weekly extends MY_Controller {
             'project_id'      => $project_id,
             'user_id'         => $assignee,
             'time_allocated'  => $grid_time,
+            'is_milestone'    => $grid_time,
             'has_started'     => ($grid_col >= 3 ? '1': '0')
           );
 
@@ -436,6 +463,20 @@ class Weekly extends MY_Controller {
       $grid_update_id = $this->Weekly_model->update_where($update_data, array('id'=>$grid_data->id));
 
       echo json_encode(array('data'=>$new_user_times));
+    }
+
+    function filter_user_grid() {
+      $user_id = $this->input->post('user_id');
+      $grid_id = $this->input->post('grid_id');
+
+      $user_tasks = $this->Tasks_weekly_model->get_details(array('user_id'=>$user_id, 'project_grid_id'=>$grid_id))->row();
+
+      if (!empty($user_tasks)) {
+        $tasks = unserialize($user_tasks->grid_tasks);
+        echo json_encode(array('data'=>$tasks));
+      } else {
+        echo json_encode(array('data'=>false));
+      }
     }
 
     function refresh_grid($grid_id) {
@@ -506,16 +547,12 @@ class Weekly extends MY_Controller {
         return json_encode($milestone_dropdown);
     }
 
-    private function _create_grid_items($item_type, $item_options) {
+    private function _create_project_grid($item_type, $item_options) {
 
       $return_data = array();
       if ($item_type === 'projects') {
         $item_options['status'] = 'open';
         $data_items = $this->Projects_model->get_details($item_options)->result();
-      }
-
-      if ($item_type === 'tasks') {
-        $data_items = $this->Tasks_model->get_details($item_options)->result();
       }
 
       if ($item_type === 'milestones') {
@@ -528,10 +565,6 @@ class Weekly extends MY_Controller {
 
         if ($item_type === 'milestones') {
           $project_details = $this->Projects_model->get_details(array('id'=>$item->project_id, 'deleted'=> 0))->row();
-
-          if ($item_type === 'tasks') {
-            $total_time[] = $this->_get_estimated_hours($item->id);
-          }
         }
 
         if ($item_type === 'projects' || $item_type === 'milestones') {
@@ -579,6 +612,32 @@ class Weekly extends MY_Controller {
             'milestone_name'=> ($item_type === 'milestones' ? $item->title : ''),
             'milestone_due'=> ($item_type === 'milestones' ? $item->due_date : '')
          );
+      }
+
+      return $return_data;
+    }
+
+    private function _create_task_grid($options = array()) {
+      $project_id = get_array_value($options, 'project_id');
+      $user_id    = get_array_value($options, 'user_id');
+      $range      = date('Y-m-d', strtotime('+2 weeks'));
+
+      $tasks = $this->Tasks_model->get_details(array('assigned_to'=>$user_id, 'project_id'=>$project_id, 'range'=>$range, 'status'=> 'to_do', 'deleted'=>0))->result();
+
+      $return_data = array();
+      foreach ($tasks as $key => $task) {
+        $return_data[] = array(
+            'project_id' => $task->project_id,
+            'unique_id' => $this->Projects_model->get_one($task->project_id)->unique_project_id,
+            'task_id' => $task->id,
+            'task_title' => $task->title,
+            'deadline' => $task->deadline,
+            'assigned_to' => $task->assigned_to,
+            'task_hours' => $this->_get_estimated_hours($task->id),
+            'data-col' => '',
+            'data-row' => '',
+            'sizex' => '1',
+        );
       }
 
       return $return_data;
