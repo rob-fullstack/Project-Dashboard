@@ -33,7 +33,7 @@
                     <a href="#" class="btn btn-default" title="Import Projects Manually" data-act="ajax-modal" data-title="Import Projects Manually" data-action-url="<?php echo get_uri('weekly/import_manual');?>"><i class="fa fa-plus-circle"></i> Import Projects Manually</a>
 
                 <?php foreach ($users as $key => $user) { ?>
-                  <span id="user_<?php echo $user['id']; ?>" class="avatar-sm avatar pull-right mt-5 mr10 weekly-avatar">
+                  <span id="user_<?php echo $user['id']; ?>" class="avatar-sm avatar pull-right mt-5 mr10 weekly-avatar" data-user="<?php echo $user['id']; ?>">
                     <img alt="<?php echo $user['full_name']; ?>" src="<?php echo ($user['image'] ? base_url().'files/profile_images/'.$user['image'] : base_url().'assets/images/avatar.jpg'); ?>">
                   </span>
                 <?php }?>
@@ -67,7 +67,7 @@
           </li>
         </ul>
       </div>
-      <div id="weekly-board" class="gridster">
+      <div id="weekly-board" class="gridster" data-type="projects">
         <ul id="project-grid">
           <?php $i = 1; if(!empty($grid_data)): foreach ($grid_data as $key => $widget) {
 
@@ -82,7 +82,7 @@
             }
 
             if ($widget['is_milestone']) {
-              if (isset($widget['milesone_id']) || !empty($widget['milesone_id'])) {
+              if (isset($widget['milestone_id']) || !empty($widget['milestone_id'])) {
                 $labels .= '<span class="milestone-title">'.$widget['milestone_name'].'</span>';
               }
             }
@@ -130,9 +130,13 @@
           widget_base_dimensions: [220, 80],
           autogenerate_stylesheet: true,
           avoid_overlapped_widgets: true,
-          extra_rows: 3,
+          min_rows: 5,
           min_cols: 1,
           max_cols: 7,
+          collision: {
+              on_overlap: function(c){
+            }
+          },
           resize: {
             enabled: true,
             axes: ['x'],
@@ -148,7 +152,7 @@
                 newState.sizex = '1';
               }
 
-              update_grid(newState);
+              updateGrid(newState);
             }
           },
           draggable: {
@@ -159,11 +163,11 @@
               if(newPosition.col == 1 || newPosition.col == 2){
                 var widgetId = $(ui.$helper[0]).attr('id');
                 this.resize_widget($('#'+widgetId),1,1);
-
                 newPosition.sizex = '1';
+                $('#'+widgetId).removeClass('widget_disabled');
               }
 
-              update_grid(newPosition);
+              updateGrid(newPosition);
             }
           }
         }).data('gridster');
@@ -191,7 +195,7 @@
 
         <?php endforeach; ?>
 
-        function update_grid(gridState) {
+        function updateGrid(gridState) {
           $.ajax({
               url: '<?php echo_uri("weekly/save_grid_status") ?>',
               type: "POST",
@@ -201,7 +205,8 @@
                 col: gridState.col,
                 sizex: gridState.sizex,
                 time: gridState.time,
-                assignee: gridState.assigne
+                assignee: gridState.assigne,
+                type: $('#weekly-board').data('type')
               },
               success: function (response) {
                 appLoader.hide();
@@ -209,6 +214,34 @@
                 $(userTime.data).each( function(){
                   console.log(this);
                   userBar[this.user_id].animate(this.time_allocated);
+                });
+              }
+          });
+        }
+
+        function filterUserGrid(userId) {
+          projectgrid.remove_all_widgets();
+          $('#weekly-board').attr('data-type','tasks');
+          $.ajax({
+              url: '<?php echo_uri("weekly/filter_user_grid") ?>',
+              type: "POST",
+              data: {
+                user_id: userId,
+                grid_id: <?php echo ($grid_id ? $grid_id : 0); ?>
+              },
+              success: function (response) {
+                var tasksData = JSON.parse(response);
+                var task = tasksData.data;
+
+                $(task).each( function(){
+                  var widget = '<li id="task-'+this.task_id+'" data-task-id="'+this.task_id+'" data-assigne="'+this.assigned_to+'" data-row="1" data-col="1" data-sizex="1" data-sizey="1" data-time="'+this.task_hours+'">'+
+                    '<a href="#" class="kanban-item" title="'+this.task_title+'">'+
+                      this.task_title +
+                      '<div class="meta"><span class="label label-warning deadline">'+this.deadline+'</span>'+
+                    '</a>'+
+                  '</li>';
+                  projectgrid.add_widget(widget);
+                  console.log(widget);
                 });
               }
           });
@@ -226,6 +259,12 @@
               }
           });
         });
+
+        $('.weekly-avatar').on('click', function() {
+          var userId = $(this).data('user');
+          filterUserGrid(userId);
+        });
+
     });
 
   </script>

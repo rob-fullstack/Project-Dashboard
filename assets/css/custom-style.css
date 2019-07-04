@@ -192,7 +192,7 @@ div.ganttview-block-text a { display: none; }
 
 #project-grid .kanban-item {
 	width: 100%;
-	min-height: 80px;
+	height: 80px;
 }
 
 #project-grid .kanban-item .meta {
@@ -200,4 +200,14 @@ div.ganttview-block-text a { display: none; }
 }
 #project-grid .kanban-item .milestone-title {
 	margin-left: 5px;
+}
+
+.weekly-avatar {
+	cursor: pointer;
+}
+
+.widget_disabled .kanban-item {
+  background: repeating-linear-gradient( 45deg, #c1c1c1, #cecece 10px, #a7a7a7 10px, #b3b3b3 20px ), linear-gradient( to bottom, #eee, #bfbfbf );
+  border-bottom: 3px solid red;
+  opacity: 0.7;
 }
