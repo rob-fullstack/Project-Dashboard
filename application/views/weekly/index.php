@@ -27,7 +27,7 @@
         <div class="p15 bg-white">
             <div class="row">
                 <div class="col-md-12">
-                  <button class="btn btn-default" id="reload-kanban-button"><i class="fa fa-refresh"></i></button>
+                  <a href="<?php echo get_uri('weekly/refresh_grid/'.$grid_id);?>" class="btn btn-default" id="reload-kanban-button"><i class="fa fa-refresh"></i></a>
                   <button class="btn btn-default" id="clear-kanban-button"><i class="fa fa-trash"></i></button>
                   <a href="#" class="btn btn-default" title="Import Projects" data-act="ajax-modal" data-title="Import Projects" data-action-url="<?php echo get_uri('weekly/import');?>"><i class="fa fa-plus-circle"></i> Import Projects</a>
                     <a href="#" class="btn btn-default" title="Import Projects Manually" data-act="ajax-modal" data-title="Import Projects Manually" data-action-url="<?php echo get_uri('weekly/import_manual');?>"><i class="fa fa-plus-circle"></i> Import Projects Manually</a>
@@ -75,7 +75,7 @@
 
             if (isset($widget['deadline']) || !empty($widget['deadline'])) {
               if ($widget['is_milestone']) {
-                $labels .= '<span class="label label-'.(strtotime($widget['deadline']) < strtotime(date('Y-m-d'), strtotime('+3 days')) ? 'danger' : 'warning' ).' deadline">'.date('d/m/y', strtotime($widget['deadline'])).'</span>';
+                $labels .= '<span class="label label-'.(strtotime($widget['milestone_due']) < strtotime(date('Y-m-d'), strtotime('+3 days')) ? 'danger' : 'warning' ).' deadline">'.date('d/m/y', strtotime($widget['milestone_due'])).'</span>';
               } else {
                 $labels .= '<span class="label label-'.(strtotime($widget['deadline']) < strtotime(date('Y-m-d'), strtotime('+3 days')) ? 'danger' : 'default' ).' deadline">'.date('d/m/y', strtotime($widget['deadline'])).'</span>';
               }
@@ -130,6 +130,9 @@
           widget_base_dimensions: [220, 80],
           autogenerate_stylesheet: true,
           avoid_overlapped_widgets: true,
+          extra_rows: 3,
+          min_cols: 1,
+          max_cols: 7,
           resize: {
             enabled: true,
             axes: ['x'],
@@ -162,9 +165,7 @@
 
               update_grid(newPosition);
             }
-          },
-          min_cols: 1,
-          max_cols: 7,
+          }
         }).data('gridster');
 
         var userBar = {};
@@ -206,6 +207,7 @@
                 appLoader.hide();
                 var userTime = JSON.parse(response);
                 $(userTime.data).each( function(){
+                  console.log(this);
                   userBar[this.user_id].animate(this.time_allocated);
                 });
               }
