@@ -21,6 +21,7 @@ class Weekly extends MY_Controller {
         $this->load->model("Weekly_model");
         $this->load->model("Weekly_times_model");
         $this->load->model("Tasks_weekly_model");
+        $this->load->model("Tasks_weekly_times_model");
     }
 
     private function can_manage_all_projects() {
@@ -231,7 +232,7 @@ class Weekly extends MY_Controller {
           'id' => $user->id,
           'full_name' => $user->first_name.' '.$user->last_name,
           'image' => $user->image,
-          'time_allocated' => $this->_calculate_hours(array('user_id'=>$user->id, 'grid_id'=>$view_data['grid_id']))
+          'time_allocated' => $this->_calculate_hours(array('user_id'=>$user->id, 'grid_id'=>$view_data['grid_id'], 'grid_type'=>'projects'))
         );
       }
 
@@ -280,18 +281,6 @@ class Weekly extends MY_Controller {
       }
     }
 
-    function test() {
-      $options = array(
-        'user_id' => 4,
-        'project_id'=> 159,
-        'range' => date('Y-m-d', strtotime('+2 weeks')),
-      );
-
-      echo '<pre>';
-      print_r($this->_create_task_grid($options));
-      echo '</pre>';
-    }
-
     function import() {
 
       $grid_data = $this->Weekly_model->get_details(array('user_id'=>$this->login_user->id))->row();
@@ -324,7 +313,7 @@ class Weekly extends MY_Controller {
 
       $project   = $this->Projects_model->get_details(array('id'=>$p_id))->row();
       $milestone  = $this->Milestones_model->get_one($m_id);
-      $project_tasks = $this->Tasks_model->get_details(array('project_id'=>$project->id,'deleted'=> 0))->result();
+      $project_tasks = $this->Tasks_model->get_details(array('project_id'=>$project->id))->result();
 
       $data['user_id'] = $this->login_user->id;
 
@@ -364,7 +353,7 @@ class Weekly extends MY_Controller {
           'milestone_name'=> ($m_id ? $milestone->title : '')
        );
 
-       $cur_grid = $this->Weekly_model->get_details(array('user_id'=>$this->login_user->id,'deleted'=>0))->row();
+       $cur_grid = $this->Weekly_model->get_details(array('user_id'=>$this->login_user->id))->row();
 
        if (!empty($cur_grid)) {
         $de_grid   = unserialize($cur_grid->grid_projects);
@@ -387,8 +376,21 @@ class Weekly extends MY_Controller {
        }
     }
 
+    function get_user_tasks_time() {
+      $user_id = $this->input->post('user_id');
+      $grid_id = $this->input->post('grid_id');
+
+      $user_time = array(
+        'user_id' => 'user_'.$user_id,
+        'time_allocated' => $new_user_time = $this->_calculate_hours(array('user_id'=>$user_id, 'grid_id'=>$grid_id, 'grid_type'=>'tasks'))
+      );
+
+      echo json_encode(array('data'=>$user_time));
+    }
+
     function save_grid_status() {
-      $project_id     = $this->input->post('id');
+      $project_id     = $this->input->post('project_id');
+      $task_id        = $this->input->post('task_id');
       $grid_row       = $this->input->post('row');
       $grid_col       = $this->input->post('col');
       $grid_size      = $this->input->post('sizex');
@@ -396,6 +398,25 @@ class Weekly extends MY_Controller {
       $grid_time      = $this->input->post('time');
       $grid_type      = $this->input->post('type');
       $grid_data      = $this->Weekly_model->get_details(array('user_id'=>$this->login_user->id))->row();
+
+      if ($grid_type === 'tasks') {
+        $tasks_grid_data  = array(
+          'grid_id'         => $grid_data->id,
+          'project_id'      => $project_id,
+          'task_id'         => $task_id,
+          'grid_row'        => $grid_row,
+          'grid_col'        => $grid_col,
+          'grid_size'       => $grid_size,
+          'grid_assignees'  => $grid_assignees,
+          'grid_time'       => $grid_time
+        );
+
+        $task_grid_return = $this->_save_task_grid($tasks_grid_data);
+
+        echo json_encode(array('data'=>$task_grid_return));
+
+        exit();
+      }
 
       $data = unserialize($grid_data->grid_projects);
 
@@ -419,7 +440,7 @@ class Weekly extends MY_Controller {
           'project_grid_id' => $grid_data->id
         );
 
-        if ($assignee_tasks_rows->num_rows <= 0) {
+        if ($assignee_tasks_rows->num_rows() <= 0) {
           $task_grid_id = $this->Tasks_weekly_model->save($tasks_grid_data);
         } else {
           $task_grid_id = $this->Tasks_weekly_model->update_where($tasks_grid_data, array('user_id'=>$assignee, 'project_grid_id'=>$grid_data->id));
@@ -431,8 +452,8 @@ class Weekly extends MY_Controller {
             'project_id'      => $project_id,
             'user_id'         => $assignee,
             'time_allocated'  => $grid_time,
-            'is_milestone'    => $grid_time,
-            'has_started'     => ($grid_col >= 3 ? '1': '0')
+            'is_milestone'    => false,
+            'has_started'     => ($grid_col >= 3 ? true: false)
           );
 
           $id = $this->Weekly_times_model->save($user_time[$key]);
@@ -440,11 +461,11 @@ class Weekly extends MY_Controller {
 
           if ($grid_col < 3) {
             $update_user = array(
-              'has_started' => '0'
+              'has_started' => false
             );
           } else {
             $update_user = array(
-              'has_started' => '1'
+              'has_started' => true
             );
           }
 
@@ -454,7 +475,7 @@ class Weekly extends MY_Controller {
         //get new updated time allocation
         $new_user_times[] = array(
           'user_id' => 'user_'.$assignee,
-          'time_allocated' => $new_user_time = $this->_calculate_hours(array('user_id'=>$assignee, 'grid_id'=>$grid_data->id))
+          'time_allocated' => $new_user_time = $this->_calculate_hours(array('user_id'=>$assignee, 'grid_id'=>$grid_data->id, 'grid_type'=>'projects'))
         );
       }
 
@@ -473,14 +494,35 @@ class Weekly extends MY_Controller {
 
       if (!empty($user_tasks)) {
         $tasks = unserialize($user_tasks->grid_tasks);
-        echo json_encode(array('data'=>$tasks));
-      } else {
-        echo json_encode(array('data'=>false));
-      }
+
+        $i = 1;
+        $task_widget = array();
+        foreach ($tasks as $key => $task) {
+          $proj = $this->Projects_model->get_one($task['project_id']);
+          $task_widget[] = array(
+            'widget' => '<li id="task-'.$task['task_id'].'" data-project-id="'.$proj->id.'" data-task-id="'.$task['task_id'].'" data-assigne="'.$task['assigned_to'].'" data-time="'.$task['task_hours'].'">
+            <a href="#" class="kanban-item" title="'.$task['task_title'].'">'.$task['task_title'].'
+            <div class="meta">
+            <span class="label label-'.(strtotime($task['deadline']) < strtotime(date('Y-m-d'), strtotime('+2 days')) ? 'danger' : 'default' ).' deadline">'.date('d/m/y', strtotime($task['deadline'])).'</span>
+            <span class="label label-success align-right">'.$task['task_hours'].' hrs</span>
+            </div>
+            </a>
+            </li>',
+            'row' => ($task['data-row'] ? $task['data-row'] : $i),
+            'col' => ($task['data-col'] ? $task['data-col'] : 1),
+            'sizex' => ($task['sizex'] ? $task['sizex'] : 1)
+          );
+
+          $i++;
+        }
+        echo json_encode(array('data'=>$task_widget));
+        } else {
+          echo json_encode(array('data'=>false));
+        }
     }
 
     function refresh_grid($grid_id) {
-      $grid_data = unserialize($this->Weekly_model->get_details(array('id'=>$grid_id, 'deleted'=> 0))->result()[0]->grid_projects);
+      $grid_data = unserialize($this->Weekly_model->get_details(array('id'=>$grid_id))->result()[0]->grid_projects);
 
       foreach ($grid_data as $key => $data) {
         if ($data['item_type'] === 'milestones') {
@@ -564,17 +606,17 @@ class Weekly extends MY_Controller {
       foreach ($data_items as $key => $item) {
 
         if ($item_type === 'milestones') {
-          $project_details = $this->Projects_model->get_details(array('id'=>$item->project_id, 'deleted'=> 0))->row();
+          $project_details = $this->Projects_model->get_details(array('id'=>$item->project_id))->row();
         }
 
         if ($item_type === 'projects' || $item_type === 'milestones') {
 
           if ($item_type === 'milestones') {
-            $members = $this->Project_members_model->get_details(array('project_id'=>$item->project_id,'deleted'=>0))->result();
-            $tasks = $this->Tasks_model->get_details(array('project_id'=> $item->project_id, 'status'=> 'open', 'deleted'=>0))->result();
+            $members = $this->Project_members_model->get_details(array('project_id'=>$item->project_id))->result();
+            $tasks = $this->Tasks_model->get_details(array('project_id'=> $item->project_id, 'status'=> 'open'))->result();
           } else {
-            $members = $this->Project_members_model->get_details(array('project_id'=>$item->id,'deleted'=>0))->result();
-            $tasks = $this->Tasks_model->get_details(array('project_id'=> $item->id, 'status'=> 'open', 'deleted'=>0))->result();
+            $members = $this->Project_members_model->get_details(array('project_id'=>$item->id))->result();
+            $tasks = $this->Tasks_model->get_details(array('project_id'=> $item->id, 'status'=> 'open'))->result();
           }
 
           foreach ($tasks as $key => $task) {
@@ -617,12 +659,82 @@ class Weekly extends MY_Controller {
       return $return_data;
     }
 
+    private function _save_task_grid($options = array()){
+      $project_id      = get_array_value($options, 'project_id');
+      $grid_id         = get_array_value($options, 'grid_id');
+      $task_id         = get_array_value($options, 'task_id');
+      $grid_col        = get_array_value($options, 'grid_col');
+      $grid_row        = get_array_value($options, 'grid_row');
+      $grid_time       = get_array_value($options, 'grid_time');
+      $grid_size       = get_array_value($options, 'grid_size');
+      $assignees       = get_array_value($options, 'grid_assignees');
+
+      foreach ($assignees as $key => $assignee) {
+        $user_task_grid = $this->Tasks_weekly_model->get_details(array('user_id'=>$assignee,'grid_id'=>$grid_id))->row();
+
+        $data = unserialize($user_task_grid->grid_tasks);
+
+        foreach ($data as $key => $grid) {
+          if ($task_id === $grid['task_id']) {
+            $data[$key]['data-col'] = $grid_col;
+            $data[$key]['data-row'] = $grid_row;
+            $data[$key]['sizex']    = $grid_size;
+          }
+        }
+
+        $update_data = array(
+          'grid_tasks' => serialize($data)
+        );
+
+        $update = $this->Tasks_weekly_model->update_where($update_data, array('id'=>$user_task_grid->id));
+
+        //save tasks times
+        $assignee_rows = $this->Tasks_weekly_times_model->get_details(array('user_id'=>$assignee, 'grid_id'=>$grid_id, 'task_id'=>$task_id));
+
+        $user_time = array();
+        $new_user_times = array();
+        if ($assignee_rows->num_rows() <= 0) {
+          $user_time[$key] = array(
+            'grid_id'         => $grid_id,
+            'project_id'      => $project_id,
+            'task_id'         => $task_id,
+            'user_id'         => $assignee,
+            'time_allocated'  => $grid_time,
+            'has_started'     => ($grid_col >= 3 ? true: false)
+          );
+
+          $id = $this->Tasks_weekly_times_model->save($user_time[$key]);
+        } else {
+
+          if ($grid_col < 3) {
+            $update_user = array(
+              'has_started' => false
+            );
+          } else {
+            $update_user = array(
+              'has_started' => true
+            );
+          }
+
+          $update_id = $this->Tasks_weekly_times_model->update_where($update_user, array('user_id'=>$assignee, 'project_id'=>$project_id, 'task_id'=>$task_id));
+        }
+
+        //get new updated time allocation
+        $new_user_times[] = array(
+          'user_id' => 'user_'.$assignee,
+          'time_allocated' => $new_user_time = $this->_calculate_hours(array('user_id'=>$assignee, 'grid_id'=>$grid_id, 'grid_type'=>'tasks'))
+        );
+      }
+
+      return $new_user_times;
+    }
+
     private function _create_task_grid($options = array()) {
       $project_id = get_array_value($options, 'project_id');
       $user_id    = get_array_value($options, 'user_id');
       $range      = date('Y-m-d', strtotime('+2 weeks'));
 
-      $tasks = $this->Tasks_model->get_details(array('assigned_to'=>$user_id, 'project_id'=>$project_id, 'range'=>$range, 'status'=> 'to_do', 'deleted'=>0))->result();
+      $tasks = $this->Tasks_model->get_details(array('assigned_to'=>$user_id, 'project_id'=>$project_id, 'range'=>$range, 'status'=> 'to_do'))->result();
 
       $return_data = array();
       foreach ($tasks as $key => $task) {
@@ -648,10 +760,15 @@ class Weekly extends MY_Controller {
     }
 
     private function _calculate_hours($options) {
-      $user       = get_array_value($options, 'user_id');
-      $grid_id    = get_array_value($options, 'grid_id');
+      $user         = get_array_value($options, 'user_id');
+      $grid_id      = get_array_value($options, 'grid_id');
+      $grid_type    = get_array_value($options, 'grid_type');
 
-      $weekly_times = $this->Weekly_times_model->get_details(array('user_id'=>$user,'grid_id'=>$grid_id, 'has_started'=> 1))->result();
+      if($grid_type === 'projects') {
+        $weekly_times = $this->Weekly_times_model->get_details(array('user_id'=>$user,'grid_id'=>$grid_id, 'has_started'=> true))->result();
+      } else {
+        $weekly_times = $this->Tasks_weekly_times_model->get_details(array('user_id'=>$user,'grid_id'=>$grid_id, 'has_started'=> true))->result();
+      }
 
       $allocated_hours = array();
       foreach ($weekly_times as $key => $hour) {

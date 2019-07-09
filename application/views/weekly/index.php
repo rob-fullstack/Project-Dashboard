@@ -68,6 +68,7 @@
         </ul>
       </div>
       <div id="weekly-board" class="gridster" data-type="projects">
+        <input id="project-type" name="project_type" type="hidden" value="projects">
         <ul id="project-grid">
           <?php $i = 1; if(!empty($grid_data)): foreach ($grid_data as $key => $widget) {
 
@@ -112,7 +113,14 @@
         $userSelect.select2();
         $teamSelect.select2();
 
-        var weeklygrid = $("#weekly-grid").gridster({
+        $userSelect.change(function(){
+          var userId = $(this).val();
+          filterUserGrid(userId);
+        });
+
+        var gridster = {};
+
+        gridster['weeklygrid'] = $("#weekly-grid").gridster({
           namespace: '#weekly-grid',
           widget_margins: [10, 20],
           autogenerate_stylesheet: true,
@@ -122,9 +130,9 @@
           max_cols: 7
         }).data('gridster');
 
-        weeklygrid.disable();
+        gridster['weeklygrid'].disable();
 
-        var projectgrid = $("#project-grid").gridster({
+        gridster['project_grid'] = $("#project-grid").gridster({
           namespace: '#project-grid',
           widget_margins: [10, 10],
           widget_base_dimensions: [220, 80],
@@ -200,19 +208,37 @@
               url: '<?php echo_uri("weekly/save_grid_status") ?>',
               type: "POST",
               data: {
-                id: gridState.projectId,
+                project_id: gridState.projectId,
+                task_id: gridState.taskId,
                 row: gridState.row,
                 col: gridState.col,
                 sizex: gridState.sizex,
                 time: gridState.time,
                 assignee: gridState.assigne,
-                type: $('#weekly-board').data('type')
+                type: $('#project-type').val()
               },
               success: function (response) {
-                appLoader.hide();
+                var userTime = JSON.parse(response);
+
+                $(userTime.data).each( function(){
+                  userBar[this.user_id].animate(this.time_allocated);
+                });
+              }
+          });
+        }
+
+        function updateUserTime(userId) {
+
+          $.ajax({
+              url: '<?php echo_uri("weekly/get_user_tasks_time") ?>',
+              type: "POST",
+              data: {
+                grid_id: <?php echo ($grid_id ? $grid_id : 0); ?>,
+                user_id: userId,
+              },
+              success: function (response) {
                 var userTime = JSON.parse(response);
                 $(userTime.data).each( function(){
-                  console.log(this);
                   userBar[this.user_id].animate(this.time_allocated);
                 });
               }
@@ -220,8 +246,25 @@
         }
 
         function filterUserGrid(userId) {
-          projectgrid.remove_all_widgets();
-          $('#weekly-board').attr('data-type','tasks');
+          //remove all widgets
+          gridster['project_grid'].remove_all_widgets();
+          $('#project-type').val('tasks');
+
+          //refresh all time first
+          $('.weekly-avatar').each( function() {
+            var id = $(this).attr('id');
+            var userGridId = $(this).data('user');
+            userBar[id].animate(0);
+
+            $(this).removeClass('selected');
+            $(this).addClass('filtered');
+
+            if(userId == userGridId) {
+              $('#user_'+userId).addClass('selected');
+            }
+
+          });
+
           $.ajax({
               url: '<?php echo_uri("weekly/filter_user_grid") ?>',
               type: "POST",
@@ -230,18 +273,11 @@
                 grid_id: <?php echo ($grid_id ? $grid_id : 0); ?>
               },
               success: function (response) {
-                var tasksData = JSON.parse(response);
-                var task = tasksData.data;
-
-                $(task).each( function(){
-                  var widget = '<li id="task-'+this.task_id+'" data-task-id="'+this.task_id+'" data-assigne="'+this.assigned_to+'" data-row="1" data-col="1" data-sizex="1" data-sizey="1" data-time="'+this.task_hours+'">'+
-                    '<a href="#" class="kanban-item" title="'+this.task_title+'">'+
-                      this.task_title +
-                      '<div class="meta"><span class="label label-warning deadline">'+this.deadline+'</span>'+
-                    '</a>'+
-                  '</li>';
-                  projectgrid.add_widget(widget);
-                  console.log(widget);
+                var tasks = JSON.parse(response);
+                $(tasks.data).each( function(){
+                  var widget = this.widget.trim();
+                  gridster['project_grid'].add_widget(widget, this.sizex, 1, this.col, this.row);
+                  updateUserTime(userId);
                 });
               }
           });
@@ -255,7 +291,6 @@
               data: {id: grid_id},
               success: function (response) {
                 location.reload();
-                appLoader.hide();
               }
           });
         });

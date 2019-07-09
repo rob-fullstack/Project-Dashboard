@@ -39,6 +39,9 @@ class Weekly_model extends Crud_model {
       $delete_weekly_sql = "UPDATE $weekly_table SET $weekly_table.deleted=1 WHERE $weekly_table.id=$grid_id; ";
       $this->db->query($delete_weekly_sql);
 
+      $delete_weekly_time_sql = "UPDATE $weekly_time_table SET $weekly_time_table.deleted=1 WHERE $weekly_time_table.grid_id=$grid_id; ";
+      $this->db->query($delete_weekly_time_sql);
+
       $delete_task_weekly_sql = "UPDATE $task_weekly_table SET $task_weekly_table.deleted=1 WHERE $task_weekly_table.project_grid_id=$grid_id; ";
       $this->db->query($delete_task_weekly_sql);
 
